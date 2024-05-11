@@ -1,0 +1,15 @@
+version: "3.5"
+
+services:
+  app:
+    container_name: docker-play-by-mood
+    image: node:18-alpine
+    ports:
+      - "3000:3000"
+    working_dir: /app
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: sh -c "yarn install && yarn dev"
