@@ -1,4 +1,4 @@
-import { Genres, Platform } from "@/adapters/rawg";
+import { Genre, Platform } from "@/adapters/rawg";
 import { MOCK } from "@/app/api/games/route";
 
 export interface SuggestedGame {
@@ -28,20 +28,16 @@ export enum Mood {
 }
 
 const genresByMood = {
-  [Mood.HAPPY]: [Genres.CASUAL, Genres.FAMILY, Genres.PUZZLE],
-  [Mood.SAD]: [Genres.ADVENTURE, Genres.ROLE_PLAYING_GAMES_RPG],
-  [Mood.EXCITED]: [Genres.ACTION, Genres.SHOOTER, Genres.RACING],
-  [Mood.BORED]: [Genres.ARCADE, Genres.SIMULATION, Genres.CASUAL],
-  [Mood.STRESSED]: [Genres.STRATEGY, Genres.PUZZLE, Genres.FIGHTING],
-  [Mood.RELAXED]: [Genres.SIMULATION, Genres.CASUAL, Genres.PUZZLE],
-  [Mood.ENERGETIC]: [Genres.SPORTS, Genres.ACTION, Genres.RACING],
-  [Mood.TIRED]: [Genres.SIMULATION, Genres.CASUAL],
-  [Mood.ANXIOUS]: [
-    Genres.PUZZLE,
-    Genres.STRATEGY,
-    Genres.ROLE_PLAYING_GAMES_RPG,
-  ],
-  [Mood.INSPIRED]: [Genres.INDIE, Genres.ROLE_PLAYING_GAMES_RPG],
+  [Mood.HAPPY]: [Genre.CASUAL, Genre.FAMILY, Genre.PUZZLE],
+  [Mood.SAD]: [Genre.ADVENTURE, Genre.RPG],
+  [Mood.EXCITED]: [Genre.ACTION, Genre.SHOOTER, Genre.RACING],
+  [Mood.BORED]: [Genre.ARCADE, Genre.SIMULATION, Genre.CASUAL],
+  [Mood.STRESSED]: [Genre.STRATEGY, Genre.PUZZLE, Genre.FIGHTING],
+  [Mood.RELAXED]: [Genre.SIMULATION, Genre.CASUAL, Genre.PUZZLE],
+  [Mood.ENERGETIC]: [Genre.SPORTS, Genre.ACTION, Genre.RACING],
+  [Mood.TIRED]: [Genre.SIMULATION, Genre.CASUAL],
+  [Mood.ANXIOUS]: [Genre.PUZZLE, Genre.STRATEGY, Genre.RPG],
+  [Mood.INSPIRED]: [Genre.INDIE, Genre.RPG],
 };
 
 async function getSuggestedGame(
