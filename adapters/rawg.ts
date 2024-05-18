@@ -49,6 +49,40 @@ interface RawgListGamesResponse {
   }[];
 }
 
+/** https://api.rawg.io/docs/#operation/games_read */
+interface RawgGameDetailsResponse {
+  name: string;
+  description_raw: string;
+  metacritic: number;
+  background_image: string;
+  released: string;
+  tags: {
+    id: number;
+    name: string;
+    slug: string;
+    language: string;
+    games_count: number;
+    image_background: string;
+  }[];
+  genres: {
+    id: number;
+    name: string;
+    slug: string;
+    games_count: number;
+    image_background: string;
+  }[];
+  parent_platforms: {
+    platform: {
+      id: number;
+      name: string;
+      slug: string;
+    };
+  }[];
+  reddit_url: string;
+}
+
+export const RAWG_ITENS_PER_PAGE = 40;
+
 const rawgGenres = {
   [Genre.ACTION]: { id: 4 },
   [Genre.INDIE]: { id: 51 },
@@ -71,7 +105,7 @@ const rawgGenres = {
   [Genre.CARD]: { id: 17 },
 };
 
-async function getGamesByGenres(genres: Genre[]) {
+async function getGamesByGenres(genres: Genre[], page = 1) {
   const genresIds = genres.map((genre) => rawgGenres[genre].id);
 
   // pegar 200 games por cada mood
@@ -89,11 +123,26 @@ async function getGamesByGenres(genres: Genre[]) {
         key: process.env.RAWG_API_KEY,
         genres: genresIds.toString(),
         ordering: "-metacritic",
-        page: 1,
-        page_size: 40,
+        page: page,
+        page_size: RAWG_ITENS_PER_PAGE,
       },
     }
   );
+
+  return response.data.results;
 }
 
-export default {};
+async function getGameDetails(gameId: number) {
+  const response = await axios.get<RawgGameDetailsResponse>(
+    `https://api.rawg.io/api/games/${gameId}`,
+    {
+      params: {
+        key: process.env.RAWG_API_KEY,
+      },
+    }
+  );
+
+  return response.data;
+}
+
+export default { getGamesByGenres, getGameDetails };
