@@ -12,3 +12,8 @@ services:
     environment:
       - NODE_ENV=development
     command: sh -c "yarn install && yarn dev"
+  mongodb:
+    image: mongo
+    container_name: docker-mongodb-play-by-mood
+    ports:
+      - "27018:27017"
