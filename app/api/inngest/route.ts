@@ -1,9 +1,9 @@
-import { inngest } from "@/inngest/client";
+import { inngest } from "@/adapters/tasks/inngest/client";
 import {
   importGameDetail,
   importGameScreenshots,
   importGames,
-} from "@/inngest/functions";
+} from "@/adapters/tasks/inngest/handlers";
 import { serve } from "inngest/next";
 
 export const { GET, POST, PUT } = serve({

@@ -1,8 +1,7 @@
 import { Genre, Platform, RAWG_ITENS_PER_PAGE } from "@/adapters/rawg";
 import { MOCK } from "@/app/api/games/route";
-import { inngest } from "@/inngest/client";
-import _ from "lodash";
 
+import taskEnqueuer from "@/adapters/tasks/inngest/enqueuers";
 export interface SuggestedGame {
   name: string;
   imageUrl: string;
@@ -45,39 +44,14 @@ const GENRES_BY_MOOD = {
 const GAMES_PER_MOOD = 200;
 
 async function importGames() {
-  const tasksEnqueuer: (() => Promise<void>)[] = [];
-
   for (const [mood, genres] of Object.entries(GENRES_BY_MOOD)) {
     const totalPages = GAMES_PER_MOOD / RAWG_ITENS_PER_PAGE;
 
-    console.info(`[import-games] Enqueuing ${mood} import`);
-
-    for (let page = 1; page <= totalPages; page++) {
-      tasksEnqueuer.push(async () => {
-        await inngest.send({
-          name: "games/import",
-          data: {
-            genres,
-            page,
-          },
-        });
-      });
-    }
-  }
-
-  await enqueueTasksWithConcurrency(tasksEnqueuer, 200);
-}
-
-async function enqueueTasksWithConcurrency(
-  tasksEnqueuer: (() => Promise<void>)[],
-  concurrency: number
-) {
-  const tasksEnqueuerChunks = _.chunk(tasksEnqueuer, concurrency);
-
-  for (const tasksEnqueuer of tasksEnqueuerChunks) {
-    await Promise.allSettled(
-      tasksEnqueuer.map((taskEnqueuer) => taskEnqueuer())
+    console.info(
+      `[import-games] Enqueuing ${totalPages} pages for ${mood} games`
     );
+
+    await taskEnqueuer.enqueueGamesImportTasksByGenre(genres, totalPages);
   }
 }
 
