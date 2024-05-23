@@ -1,3 +1,5 @@
+import connectDB from "@/config/db";
+import { GamesModel } from "@/models/Games";
 import { NextRequest, NextResponse } from "next/server";
 
 export const MOCK = {
@@ -50,5 +52,9 @@ export async function GET(request: NextRequest) {
 
   // const suggestedGame = await getSuggestedGame(mood, platform)
 
-  return NextResponse.json(MOCK);
+  await connectDB();
+
+  const game = await GamesModel.find();
+
+  return NextResponse.json(game);
 }

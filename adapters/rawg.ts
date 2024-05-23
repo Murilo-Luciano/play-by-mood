@@ -51,6 +51,7 @@ interface RawgListGamesResponse {
 
 /** https://api.rawg.io/docs/#operation/games_read */
 interface RawgGameDetailsResponse {
+  id: number;
   name: string;
   description_raw: string;
   metacritic: number;

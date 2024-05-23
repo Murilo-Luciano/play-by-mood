@@ -17,3 +17,4 @@ services:
     container_name: docker-mongodb-play-by-mood
     ports:
       - "27018:27017"
+      - "28018:28017"
