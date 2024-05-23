@@ -9,7 +9,7 @@ type Event = GetEvents<typeof inngest>;
 
 export const importGames = inngest.createFunction(
   { id: "import-games", concurrency: 2 },
-  { event: "game/import" },
+  { event: "games/import" },
   async ({ event, step }) => {
     const { genres, page } = event.data;
 
@@ -35,9 +35,9 @@ export const importGames = inngest.createFunction(
       (game) => game.id
     );
 
-    const gamesDetailEvents = gamesId.map<Event["game/import.details"]>(
+    const gamesDetailEvents = gamesId.map<Event["games/import.details"]>(
       (id) => ({
-        name: "game/import.details",
+        name: "games/import.details",
         data: {
           gameId: id,
         },
@@ -61,7 +61,7 @@ export const importGames = inngest.createFunction(
 
 export const importGameDetail = inngest.createFunction(
   { id: "import-game-details", concurrency: 2 },
-  { event: "game/import.details" },
+  { event: "games/import.details" },
   async ({ event, step }) => {
     const { gameId } = event.data;
 
@@ -99,7 +99,7 @@ export const importGameDetail = inngest.createFunction(
     );
 
     await step.sendEvent("enqueue-games-detail-screenshots", {
-      name: "game/import.screenshots",
+      name: "games/import.screenshots",
       data: {
         gameId: game.id,
       },
@@ -109,7 +109,7 @@ export const importGameDetail = inngest.createFunction(
 
 export const importGameScreenshots = inngest.createFunction(
   { id: "import-game-screenshots", concurrency: 2 },
-  { event: "game/import.screenshots" },
+  { event: "games/import.screenshots" },
   async ({ event }) => {
     const { gameId } = event.data;
 
