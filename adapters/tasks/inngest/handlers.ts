@@ -1,5 +1,3 @@
-/**@todo: repensar aonde colocar na estrutura de pastas */
-
 import rawg, { Genre } from "@/adapters/rawg";
 import { GamesModel } from "@/models/Games";
 import { GetEvents } from "inngest";
