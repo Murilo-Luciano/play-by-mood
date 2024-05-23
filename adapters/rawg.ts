@@ -82,6 +82,20 @@ interface RawgGameDetailsResponse {
   reddit_url: string;
 }
 
+/** https://api.rawg.io/docs/#operation/games_screenshots_list */
+interface RawgGameScreenshotsResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: {
+    id: number;
+    image: string;
+    width: number;
+    height: number;
+    is_deleted: boolean;
+  }[];
+}
+
 export const RAWG_ITENS_PER_PAGE = 40;
 
 const rawgGenres = {
@@ -105,6 +119,8 @@ const rawgGenres = {
   [Genre.EDUCATIONAL]: { id: 34 },
   [Genre.CARD]: { id: 17 },
 };
+
+/**@todo: lidar com erros */
 
 async function getGamesByGenres(genres: Genre[], page = 1) {
   const genresIds = genres.map((genre) => rawgGenres[genre].id);
@@ -146,4 +162,17 @@ async function getGameDetails(gameId: number) {
   return response.data;
 }
 
-export default { getGamesByGenres, getGameDetails };
+async function getGameScreenshots(gameId: number) {
+  const response = await axios.get<RawgGameScreenshotsResponse>(
+    `https://api.rawg.io/api/games/${gameId}/screenshots`,
+    {
+      params: {
+        key: process.env.RAWG_API_KEY,
+      },
+    }
+  );
+
+  return response.data.results;
+}
+
+export default { getGamesByGenres, getGameDetails, getGameScreenshots };

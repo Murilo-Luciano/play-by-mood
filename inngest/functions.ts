@@ -1,6 +1,7 @@
 /**@todo: repensar aonde colocar na estrutura de pastas */
 
 import rawg, { Genre } from "@/adapters/rawg";
+import { GamesModel } from "@/models/Games";
 import { GetEvents } from "inngest";
 import { inngest } from "./client";
 
@@ -72,6 +73,62 @@ export const importGameDetail = inngest.createFunction(
     console.info(`[inngest-import-game-details] Importing ${gameId} details`);
 
     const game = await rawg.getGameDetails(gameId);
+
+    await GamesModel.findByIdAndUpdate(
+      game.id,
+      {
+        name: game.name,
+        description: game.description_raw,
+        metacriticRating: game.metacritic,
+        imageUrl: game.background_image,
+        releasedDate: game.released,
+        redditUrl: game.reddit_url,
+        tags: game.tags,
+        genres: game.genres,
+        platforms: game.parent_platforms,
+      },
+      { upsert: true }
+    );
+
+    console.info(
+      `[inngest-import-game-details] Finished importing ${gameId} details`
+    );
+
+    console.info(
+      `[inngest-import-game-details] Enqueuing screenshot import ${game.id}`
+    );
+
+    await step.sendEvent("enqueue-games-detail-screenshots", {
+      name: "game/import.screenshots",
+      data: {
+        gameId: game.id,
+      },
+    });
+  }
+);
+
+export const importGameScreenshots = inngest.createFunction(
+  { id: "import-game-screenshots", concurrency: 2 },
+  { event: "game/import.screenshots" },
+  async ({ event }) => {
+    const { gameId } = event.data;
+
+    if (!gameId) {
+      console.error(`[inngest-import-game-screenshots] Missing gameId`);
+      return;
+    }
+
+    console.info(
+      `[inngest-import-game-screenshots] Importing ${gameId} screenshots`
+    );
+
+    const screenshots = await rawg.getGameScreenshots(gameId);
+
+    await GamesModel.findByIdAndUpdate(gameId, { screenshots });
+
+    console.info(
+      `[inngest-import-game-screenshots] Finished importing ${gameId} screenshots`
+    );
   }
 );
 
