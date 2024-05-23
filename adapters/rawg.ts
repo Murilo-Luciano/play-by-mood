@@ -125,14 +125,6 @@ const rawgGenres = {
 async function getGamesByGenres(genres: Genre[], page = 1) {
   const genresIds = genres.map((genre) => rawgGenres[genre].id);
 
-  // pegar 200 games por cada mood
-  // 5 chamadas por mood ( no max ) -> 50 chamadas
-  // cada chamada leva ~4s
-
-  // https://www.inngest.com/docs/quick-start?ref=docs-homepage
-  /**@todo: enfileirar todas as chamadas com o inngest */
-
-  // 4s
   const response = await axios.get<RawgListGamesResponse>(
     "https://api.rawg.io/api/games",
     {

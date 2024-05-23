@@ -1,5 +1,7 @@
-import { Genre, Platform } from "@/adapters/rawg";
+import { Genre, Platform, RAWG_ITENS_PER_PAGE } from "@/adapters/rawg";
 import { MOCK } from "@/app/api/games/route";
+import { inngest } from "@/inngest/client";
+import _ from "lodash";
 
 export interface SuggestedGame {
   name: string;
@@ -27,7 +29,7 @@ export enum Mood {
   INSPIRED = "INSPIRED",
 }
 
-const genresByMood = {
+const GENRES_BY_MOOD = {
   [Mood.HAPPY]: [Genre.CASUAL, Genre.FAMILY, Genre.PUZZLE],
   [Mood.SAD]: [Genre.ADVENTURE, Genre.RPG],
   [Mood.EXCITED]: [Genre.ACTION, Genre.SHOOTER, Genre.RACING],
@@ -40,17 +42,54 @@ const genresByMood = {
   [Mood.INSPIRED]: [Genre.INDIE, Genre.RPG],
 };
 
+const GAMES_PER_MOOD = 200;
+
+async function importGames() {
+  const tasksEnqueuer: (() => Promise<void>)[] = [];
+
+  for (const [mood, genres] of Object.entries(GENRES_BY_MOOD)) {
+    const totalPages = GAMES_PER_MOOD / RAWG_ITENS_PER_PAGE;
+
+    console.info(`[import-games] Enqueuing ${mood} import`);
+
+    for (let page = 1; page <= totalPages; page++) {
+      tasksEnqueuer.push(async () => {
+        await inngest.send({
+          name: "games/import",
+          data: {
+            genres,
+            page,
+          },
+        });
+      });
+    }
+  }
+
+  await enqueueTasksWithConcurrency(tasksEnqueuer, 200);
+}
+
+async function enqueueTasksWithConcurrency(
+  tasksEnqueuer: (() => Promise<void>)[],
+  concurrency: number
+) {
+  const tasksEnqueuerChunks = _.chunk(tasksEnqueuer, concurrency);
+
+  for (const tasksEnqueuer of tasksEnqueuerChunks) {
+    await Promise.allSettled(
+      tasksEnqueuer.map((taskEnqueuer) => taskEnqueuer())
+    );
+  }
+}
+
 async function getSuggestedGame(
   mood: Mood,
   platform: Platform
 ): Promise<SuggestedGame> {
-  const genres = genresByMood[mood];
+  const genres = GENRES_BY_MOOD[mood];
 
-  const game: any = {}; // gamesProvider.getGameByGenres(genres, platform)
+  const game: any = {}; // GamesModel.findOne...
 
   return MOCK;
 }
 
-async function importGames() {}
-
-export default { getSuggestedGame };
+export default { importGames, getSuggestedGame };
