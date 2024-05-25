@@ -1,4 +1,4 @@
-import { getModelForClass, prop } from "@typegoose/typegoose";
+import { getModelForClass, mongoose, prop } from "@typegoose/typegoose";
 
 class Tag {
   @prop({ required: true }) public id!: number;
@@ -36,4 +36,6 @@ class Games {
   @prop() public screenshots?: Screenshot[];
 }
 
-export const GamesModel = getModelForClass(Games);
+const GamesModel = mongoose.models.Games || getModelForClass(Games);
+
+export default GamesModel;
