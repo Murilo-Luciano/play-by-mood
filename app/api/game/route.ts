@@ -15,6 +15,8 @@ export async function GET(request: NextRequest) {
 
   const game = await gameService.getSuggestedGame(mood, platforms);
 
+  console.log("AQUI!!! ----> game", game);
+
   return NextResponse.json(game);
 }
 
