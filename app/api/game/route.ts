@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
 
   console.log("AQUI!!! ----> game", game);
 
-  return NextResponse.json(game);
+  return NextResponse.json(game || {});
 }
 
 function isMoodValid(mood: string): mood is Mood {
