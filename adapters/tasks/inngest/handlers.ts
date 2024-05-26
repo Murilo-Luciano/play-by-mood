@@ -1,5 +1,6 @@
 import rawg, { Genre } from "@/adapters/rawg";
-import { GamesModel } from "@/models/Games";
+import connectDB from "@/config/db";
+import GamesModel from "@/models/Games";
 import { GetEvents } from "inngest";
 import { inngest } from "./client";
 
@@ -72,8 +73,9 @@ export const importGameDetail = inngest.createFunction(
 
     const game = await rawg.getGameDetails(gameId);
 
-    await GamesModel.findByIdAndUpdate(
-      game.id,
+    await connectDB();
+    await GamesModel.findOneAndUpdate(
+      { id: game.id },
       {
         name: game.name,
         description: game.description_raw,
@@ -83,7 +85,7 @@ export const importGameDetail = inngest.createFunction(
         redditUrl: game.reddit_url,
         tags: game.tags,
         genres: game.genres,
-        platforms: game.parent_platforms,
+        platforms: game.parent_platforms.map((p) => p.platform),
       },
       { upsert: true }
     );
@@ -122,7 +124,8 @@ export const importGameScreenshots = inngest.createFunction(
 
     const screenshots = await rawg.getGameScreenshots(gameId);
 
-    await GamesModel.findByIdAndUpdate(gameId, { screenshots });
+    await connectDB();
+    await GamesModel.findOneAndUpdate({ id: gameId }, { screenshots });
 
     console.info(
       `[inngest-import-game-screenshots] Finished importing ${gameId} screenshots`

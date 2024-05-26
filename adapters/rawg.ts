@@ -96,9 +96,20 @@ interface RawgGameScreenshotsResponse {
   }[];
 }
 
+export const MOST_POPULAR_PLATFORMS = [
+  Platform.PC,
+  Platform.LINUX,
+  Platform.APPLE_MACINTOSH,
+  Platform.PLAYSTATION,
+  Platform.XBOX,
+  Platform.NINTENDO,
+  Platform.ANDROID,
+  Platform.IOS,
+];
+
 export const RAWG_ITENS_PER_PAGE = 40;
 
-const rawgGenres = {
+export const rawgGenres = {
   [Genre.ACTION]: { id: 4 },
   [Genre.INDIE]: { id: 51 },
   [Genre.ADVENTURE]: { id: 3 },
@@ -120,7 +131,22 @@ const rawgGenres = {
   [Genre.CARD]: { id: 17 },
 };
 
-/**@todo: lidar com erros */
+export const rawgParentPlatforms = {
+  [Platform.PC]: { id: 1 },
+  [Platform.PLAYSTATION]: { id: 2 },
+  [Platform.XBOX]: { id: 3 },
+  [Platform.IOS]: { id: 4 },
+  [Platform.ANDROID]: { id: 8 },
+  [Platform.APPLE_MACINTOSH]: { id: 5 },
+  [Platform.LINUX]: { id: 6 },
+  [Platform.NINTENDO]: { id: 7 },
+  [Platform.ATARI]: { id: 9 },
+  [Platform.COMMODORE_AMIGA]: { id: 10 },
+  [Platform.SEGA]: { id: 11 },
+  [Platform.PANASONIC_3DO]: { id: 12 },
+  [Platform.NEO_GEO]: { id: 13 },
+  [Platform.WEB]: { id: 14 },
+};
 
 async function getGamesByGenres(genres: Genre[], page = 1) {
   const genresIds = genres.map((genre) => rawgGenres[genre].id);

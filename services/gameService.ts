@@ -1,19 +1,15 @@
-import { Genre, Platform, RAWG_ITENS_PER_PAGE } from "@/adapters/rawg";
-import { MOCK } from "@/app/api/games/route";
+import {
+  Genre,
+  Platform,
+  RAWG_ITENS_PER_PAGE,
+  rawgGenres,
+  rawgParentPlatforms,
+} from "@/adapters/rawg";
 
 import taskEnqueuer from "@/adapters/tasks/inngest/enqueuers";
-export interface SuggestedGame {
-  name: string;
-  imageUrl: string;
-  metacriticRating: number;
-  description: string;
-  tags: string[];
-  genres: string[];
-  platforms: string[];
-  screenshots: string[];
-  releasedDate: string;
-  redditUrl: string;
-}
+import connectDB from "@/config/db";
+import GamesModel, { Games } from "@/models/Games";
+import _ from "lodash";
 
 export enum Mood {
   HAPPY = "HAPPY",
@@ -55,15 +51,64 @@ async function importGames() {
   }
 }
 
+/**@todo: Refactor */
 async function getSuggestedGame(
   mood: Mood,
-  platform: Platform
-): Promise<SuggestedGame> {
+  platforms?: Platform[]
+): Promise<Games | undefined> {
   const genres = GENRES_BY_MOOD[mood];
+  const genresIds = genres.map((genre) => rawgGenres[genre].id);
 
-  const game: any = {}; // GamesModel.findOne...
+  const platformIds =
+    platforms && platforms.map((platform) => rawgParentPlatforms[platform].id);
 
-  return MOCK;
+  await connectDB();
+
+  // find a game with exactly all genres
+  const gameWithExactlyAllGenres = await GamesModel.aggregate<Games>([
+    { $addFields: { genresIds: "$genres.id", platformIds: "$platforms.id" } },
+    {
+      $match: {
+        ...(platformIds && { platformIds: { $in: platformIds } }),
+        genresIds: { $all: genresIds, $size: genresIds.length },
+      },
+    },
+    { $sample: { size: 1 } },
+  ]);
+
+  if (!_.isEmpty(gameWithExactlyAllGenres)) {
+    return _.first(gameWithExactlyAllGenres)!;
+  }
+
+  // find a game with all genres
+  const gameWithAllGenres = await GamesModel.aggregate<Games>([
+    { $addFields: { genresIds: "$genres.id", platformIds: "$platforms.id" } },
+    {
+      $match: {
+        ...(platformIds && { platformIds: { $in: platformIds } }),
+        genresIds: { $all: genresIds, $size: genresIds.length },
+      },
+    },
+    { $sample: { size: 1 } },
+  ]);
+
+  if (!_.isEmpty(gameWithAllGenres)) {
+    return _.first(gameWithAllGenres)!;
+  }
+
+  // find a game with at least one genre
+  const gameWithAlmostAllGenres = await GamesModel.aggregate<Games>([
+    { $addFields: { genresIds: "$genres.id", platformIds: "$platforms.id" } },
+    {
+      $match: {
+        ...(platformIds && { platformIds: { $in: platformIds } }),
+        genresIds: { $in: genresIds },
+      },
+    },
+    { $sample: { size: 1 } },
+  ]);
+
+  return _.first(gameWithAlmostAllGenres);
 }
 
 export default { importGames, getSuggestedGame };

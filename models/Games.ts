@@ -1,4 +1,4 @@
-import { getModelForClass, mongoose, prop } from "@typegoose/typegoose";
+import { getModelForClass, index, mongoose, prop } from "@typegoose/typegoose";
 
 class Tag {
   @prop({ required: true }) public id!: number;
@@ -22,7 +22,8 @@ class Screenshot {
   @prop({ required: true }) public height!: number;
 }
 
-class Games {
+@index({ id: 1 })
+export class Games {
   @prop({ required: true }) public id!: number;
   @prop({ required: true }) public name!: string;
   @prop({ required: true }) public description!: string;
