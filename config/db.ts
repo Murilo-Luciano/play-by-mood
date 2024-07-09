@@ -5,12 +5,7 @@ export default async function connectDB() {
 
   if (!process.env.MONGODB_URI) throw new Error("No MONGODB_URI defined");
 
-  const mongo = await mongoose.connect(process.env.MONGODB_URI);
-  /**@todo: remove */
-  console.log(
-    "mongo.connection.readyState -----> ",
-    mongo.connection.readyState
-  );
+  await mongoose.connect(process.env.MONGODB_URI);
 
   console.info("Mongo connected!");
 }

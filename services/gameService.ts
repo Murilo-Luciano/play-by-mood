@@ -64,10 +64,6 @@ async function getSuggestedGame(
 
   await connectDB();
 
-  /**@todo: remove */
-  const count = await GamesModel.countDocuments();
-  console.info("GamesModel.countDocuments ---> ", count);
-
   // find a game with exactly all genres
   const gameWithExactlyAllGenres = await GamesModel.aggregate<Games>([
     { $addFields: { genresIds: "$genres.id", platformIds: "$platforms.id" } },
