@@ -37,6 +37,8 @@ export class Games {
   @prop() public screenshots?: Screenshot[];
 }
 
-const GamesModel = mongoose.models.Games || getModelForClass(Games);
+const GamesModel =
+  mongoose.models.Games ||
+  getModelForClass(Games, { options: { customName: "games" } });
 
 export default GamesModel;
