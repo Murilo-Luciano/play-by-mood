@@ -18,6 +18,8 @@ export async function GET(request: NextRequest) {
 
   console.log("AQUI!!! ----> game", game);
 
+  console.log("AQUI!!! ----> collection.name", GamesModel.collection.name);
+
   await GamesModel.create({
     id: 123456,
     __v: 0,
