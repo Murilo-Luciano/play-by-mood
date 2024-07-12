@@ -1,4 +1,5 @@
 import { Platform } from "@/adapters/rawg";
+import { inngest } from "@/adapters/tasks/inngest/client";
 import gameService, { Mood } from "@/services/gameService";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -14,6 +15,11 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ message: "Invalid Platforms" }, { status: 422 });
 
   const game = await gameService.getSuggestedGame(mood, platforms);
+
+  await inngest.send({
+    name: "app/test.inngest",
+    data: {},
+  });
 
   return NextResponse.json(game || {});
 }
