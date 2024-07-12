@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
 
   const game = await gameService.getSuggestedGame(mood, platforms);
 
+  console.log("ENVIANDO EVENTO");
   await inngest.send({
     name: "app/test.inngest",
     data: {},
