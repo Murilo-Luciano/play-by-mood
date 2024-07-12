@@ -142,7 +142,7 @@ export const test = inngest.createFunction(
     console.log("AQUI!!!!!!!!!");
 
     console.info(`[test-inngest] Finished Testing inngest`);
-    return;
+    return { event, body: "Hello, World!" };
   }
 );
 
