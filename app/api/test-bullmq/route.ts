@@ -33,5 +33,5 @@ export async function GET(request: NextRequest) {
   await queue.add("myJob", { testando: "SIM" });
 
   console.info("[bullqueueMQ] Finished handling test bullqueueMQ");
-  return NextResponse.json({});
+  return NextResponse.json({ testando: "SIM" });
 }
