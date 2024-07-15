@@ -13,6 +13,7 @@
   "dependencies": {
     "@typegoose/typegoose": "^12.4.0",
     "axios": "^1.6.8",
+    "bullmq": "^5.8.7",
     "inngest": "^3.19.1",
     "lodash": "^4.17.21",
     "mongoose": "^8.4.0",
