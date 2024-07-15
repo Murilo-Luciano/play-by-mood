@@ -27,11 +27,11 @@ const worker = new Worker(
 const flowProducer = new FlowProducer({ connection });
 
 export async function GET(request: NextRequest) {
-  console.info("[bee-queue] Handling test bee-queue");
+  console.info("[bullqueueMQ] Handling test bullqueueMQ");
 
   console.log("SAVING JOB");
   await queue.add("myJob", { testando: "SIM" });
 
-  console.info("[bee-queue] Finished handling test bee-queue");
+  console.info("[bullqueueMQ] Finished handling test bullqueueMQ");
   return NextResponse.json({});
 }
