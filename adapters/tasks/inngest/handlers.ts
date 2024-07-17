@@ -133,19 +133,6 @@ export const importGameScreenshots = inngest.createFunction(
   }
 );
 
-export const test = inngest.createFunction(
-  { id: "test-inngest" },
-  { event: "app/test.inngest" },
-  async ({ event, step }) => {
-    console.info(`[test-inngest] Testing inngest`);
-
-    console.log("AQUI!!!!!!!!!");
-
-    console.info(`[test-inngest] Finished Testing inngest`);
-    return { event, body: "Hello, World!" };
-  }
-);
-
 function isGenresValid(genres: any): genres is Genre[] {
   if (!Array.isArray(genres)) return false;
 
