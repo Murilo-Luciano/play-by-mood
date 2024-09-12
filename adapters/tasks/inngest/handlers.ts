@@ -78,7 +78,7 @@ export const importGameDetail = inngest.createFunction(
       { id: game.id },
       {
         name: game.name,
-        description: game.description_raw,
+        description: game.description,
         metacriticRating: game.metacritic,
         imageUrl: game.background_image,
         releasedDate: game.released,

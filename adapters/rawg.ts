@@ -53,6 +53,7 @@ interface RawgListGamesResponse {
 interface RawgGameDetailsResponse {
   id: number;
   name: string;
+  description: string;
   description_raw: string;
   metacritic: number;
   background_image: string;
