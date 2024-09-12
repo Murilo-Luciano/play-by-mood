@@ -1,11 +1,17 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Games } from "@/models/Games";
 import DOMPurify from "dompurify";
 import Image from "next/image";
+import { useState } from "react";
 import useSWR from "swr";
 
+const TEXT_MAX_LENGTH = 400;
+
 export default function Page({ params }: { params: { slug: string } }) {
+  const [readMore, setReadMore] = useState(false);
+
   const { data, error, isLoading } = useSWR<Games>(
     `/api/game?mood=${params.slug}`,
     fetcher,
@@ -59,12 +65,29 @@ export default function Page({ params }: { params: { slug: string } }) {
           <p className="text-sm text-start text-muted-foreground">
             Description
           </p>
-          {/* <ReactMarkdown>{data.description}</ReactMarkdown> */}
-          <div
-            dangerouslySetInnerHTML={{
-              __html: applyClassMapping(sanitizedHtml),
-            }}
-          />
+          {readMore ? (
+            <div>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: applyClassMapping(sanitizedHtml),
+                }}
+              />
+              <Button className="rounded-xl" onClick={() => setReadMore(false)}>
+                Show less
+              </Button>
+            </div>
+          ) : (
+            <div>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: `${sanitizedHtml.slice(0, TEXT_MAX_LENGTH)}...`,
+                }}
+              />
+              <Button className="rounded-xl" onClick={() => setReadMore(true)}>
+                Read more
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </main>
