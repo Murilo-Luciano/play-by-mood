@@ -52,7 +52,7 @@ export default function Page({ params }: { params: { slug: string } }) {
 
           <div className="text-sm text-start">
             <p className="text-muted-foreground">Metacritic score</p>
-            <p>{data.metacriticRating}</p>
+            <p className="text-green-500">{data.metacriticRating}</p>
           </div>
 
           <div className="text-sm text-start">
@@ -89,6 +89,18 @@ export default function Page({ params }: { params: { slug: string } }) {
             </div>
           )}
         </div>
+
+        <div className="text-sm text-start">
+          <p className="text-muted-foreground">Key words</p>
+          <p>{data.tags.map((p) => p.name).join(", ")}</p>
+        </div>
+
+        <p>
+          Data provided by{" "}
+          <a href="https://rawg.io/" target="_blank" className="underline">
+            rawg.io
+          </a>
+        </p>
       </div>
     </main>
   );
