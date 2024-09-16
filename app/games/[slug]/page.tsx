@@ -1,10 +1,11 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Games } from "@/models/Games";
 import DOMPurify from "dompurify";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import useSWR from "swr";
 
@@ -53,7 +54,32 @@ export default function Page({ params }: { params: { slug: string } }) {
       </main>
     );
 
-  if (!data || error) return <p>ERRO</p>;
+  if (!data || error)
+    return (
+      <main className="flex flex-col p-4 items-center">
+        <h1 className="text-xl font-extrabold tracking-tight mb-10">
+          PlayByMood
+        </h1>
+
+        <div className="flex flex-col items-center gap-4">
+          <TriangleAlertIcon className="h-16 w-16 text-gray-500 dark:text-gray-400" />
+          <div className="space-y-2 text-center">
+            <h1 className="text-3xl font-bold">Oops, something went wrong!</h1>
+            <p className="text-gray-500 dark:text-gray-400">
+              We're sorry, but it looks like there was an error. Please try
+              again later or contact us if the issue persists.
+            </p>
+          </div>
+          <Link
+            href="/"
+            prefetch={false}
+            className={buttonVariants({ variant: "default" })}
+          >
+            Go to Homepage
+          </Link>
+        </div>
+      </main>
+    );
 
   const placeholder = `<h3>Three in a row</h3>\n<p>The third part of the popular series of games in the genre three in a row, Bejeweled 3 was developed by the PopCap Games studio in 2010. The game was the fifth in the series, but the third one that received a number in the name. Originally released only on PC and Mac, but later it was ported to both consoles and mobile devices running Android, iOS, Java ME and Windows Phone. The developers called the game “the biggest Bejeweled experience available to date.” The game is available for free at partner sites.</p>\n<h3>What to do?</h3>\n<p>The goal of the game has not changed compared to the previous parts: the player must match three identical in color gem, which, if all is correct, they disappear. Rows of gems are constantly moving, and the game adds the random new gems on top screen. Thus, the player can launch a chain reaction and earn many points at once.</p>\n<h3>What’s new?</h3>\n<p>In the new part of Bejeweled, four new game modes appeared as well as new sound effects and improved graphics. However, this is true not for all versions of the game: so in the Java ME version, players have only four game modes available due to hardware limitations. There is Zen mode also in the game - a new one. There, players can customize the audio and visual components of the game and create their own meditative experience. There is no plot in the game, but you can earn 65 badges to prove the ultimate player’s skill.</p>`;
   // deveria ser o data.description, mas hj o data.description está como markdown
@@ -163,4 +189,25 @@ function applyClassMapping(html: string): string {
   });
 
   return html;
+}
+
+function TriangleAlertIcon(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
+      <path d="M12 9v4" />
+      <path d="M12 17h.01" />
+    </svg>
+  );
 }

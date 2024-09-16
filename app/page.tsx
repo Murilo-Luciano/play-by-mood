@@ -36,7 +36,7 @@ export default function Home() {
         <MoodButton />
         <MoodButton />
       </div>
-      <div className="fixed bottom-0 w-full flex flex-col gap-2 py-2 bg-background">
+      <div className="flex flex-col gap-2 py-2 mt-7">
         <p className="text-sm text-muted-foreground">
           Made by{" "}
           <a
@@ -64,11 +64,14 @@ export default function Home() {
 
 function MoodButton() {
   return (
-    <div className="w-44 h-44 flex flex-col justify-between items-center">
+    <a
+      className="w-44 h-44 flex flex-col justify-between items-center"
+      href="/games/HAPPY"
+    >
       <Image src={"/happy.png"} alt="" height={132} width={132} />
-      <div className="bg-primary w-full rounded-b-2xl">
+      <div className="bg-[#e11d48] w-full rounded-b-2xl">
         <p className="text-xl font-extrabold">Happy</p>
       </div>
-    </div>
+    </a>
   );
 }
