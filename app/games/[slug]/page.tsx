@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Games } from "@/models/Games";
 import DOMPurify from "dompurify";
 import Image from "next/image";
@@ -18,7 +19,39 @@ export default function Page({ params }: { params: { slug: string } }) {
     { revalidateOnReconnect: false, revalidateOnFocus: false }
   );
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading)
+    return (
+      <main className="flex flex-col p-4 text-center overflow-x-hidden">
+        <h1 className="text-xl font-extrabold tracking-tight">PlayByMood</h1>
+        <Skeleton className="w-full h-9 my-16" />
+        <div className="flex flex-row gap-3 self-start">
+          <Skeleton className="w-[264px] h-[148px] rounded-2xl" />
+          <Skeleton className="w-[264px] h-[148px] rounded-2xl" />
+        </div>
+
+        <div className="flex flex-col gap-4 mt-4">
+          <div className="flex gap-8">
+            <div className="flex flex-col gap-1">
+              <Skeleton className="w-12 h-4" />
+              <Skeleton className="w-24 h-4" />
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <Skeleton className="w-12 h-4" />
+              <Skeleton className="w-24 h-4" />
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <Skeleton className="w-12 h-4" />
+              <Skeleton className="w-24 h-4" />
+            </div>
+          </div>
+
+          <Skeleton className="w-24 h-4" />
+          <Skeleton className="w-full h-80" />
+        </div>
+      </main>
+    );
 
   if (!data || error) return <p>ERRO</p>;
 
