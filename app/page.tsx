@@ -69,7 +69,7 @@ function MoodButton() {
       href="/games/HAPPY"
     >
       <Image src={"/happy.png"} alt="" height={132} width={132} />
-      <div className="bg-[#e11d48] w-full rounded-b-2xl">
+      <div className="bg-purple-500 w-full rounded-b-2xl">
         <p className="text-xl font-extrabold">Happy</p>
       </div>
     </a>

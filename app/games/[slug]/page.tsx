@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Games } from "@/models/Games";
 import DOMPurify from "dompurify";
@@ -75,7 +75,7 @@ export default function Page({ params }: { params: { slug: string } }) {
             prefetch={false}
             className={buttonVariants({ variant: "default" })}
           >
-            Go to Homepage
+            Return to Homepage
           </Link>
         </div>
       </main>
@@ -92,13 +92,14 @@ export default function Page({ params }: { params: { slug: string } }) {
         {data.name}
       </h2>
       <div className="flex flex-row gap-3 overflow-y-auto">
-        {data.screenshots?.map((e) => (
+        {data.screenshots?.map((e, k) => (
           <Image
+            key={k}
             src={(e as any).image}
             alt="Game screenshot"
             width={264}
             height={148}
-            className="rounded-2xl"
+            className="rounded-2xl w-auto h-auto"
           />
         ))}
       </div>
@@ -131,9 +132,12 @@ export default function Page({ params }: { params: { slug: string } }) {
                   __html: applyClassMapping(sanitizedHtml),
                 }}
               />
-              <Button className="rounded-xl" onClick={() => setReadMore(false)}>
+              <span
+                className="text-purple-500"
+                onClick={() => setReadMore(false)}
+              >
                 Show less
-              </Button>
+              </span>
             </div>
           ) : (
             <div>
@@ -142,9 +146,12 @@ export default function Page({ params }: { params: { slug: string } }) {
                   __html: `${sanitizedHtml.slice(0, TEXT_MAX_LENGTH)}...`,
                 }}
               />
-              <Button className="rounded-xl" onClick={() => setReadMore(true)}>
-                Read more
-              </Button>
+              <span
+                className="text-purple-500"
+                onClick={() => setReadMore(true)}
+              >
+                Show more
+              </span>
             </div>
           )}
         </div>
