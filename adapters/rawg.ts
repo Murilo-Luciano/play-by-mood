@@ -53,6 +53,7 @@ interface RawgListGamesResponse {
 interface RawgGameDetailsResponse {
   id: number;
   name: string;
+  description: string;
   description_raw: string;
   metacritic: number;
   background_image: string;
@@ -157,6 +158,8 @@ async function getGamesByGenres(genres: Genre[], page = 1) {
       params: {
         key: process.env.RAWG_API_KEY,
         genres: genresIds.toString(),
+        /**@todo: order by -added */
+        /**@todo: than order by -metacritic */
         ordering: "-metacritic",
         page: page,
         page_size: RAWG_ITENS_PER_PAGE,

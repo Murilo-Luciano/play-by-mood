@@ -38,7 +38,7 @@ export class Games {
 }
 
 const GamesModel =
-  mongoose.models.Games ||
+  mongoose.models.games ||
   getModelForClass(Games, { options: { customName: "games" } });
 
 export default GamesModel;
