@@ -172,7 +172,7 @@ export default function Page({ params }: { params: { slug: string } }) {
   );
 }
 
-export async function fetcher<JSON = any>(
+async function fetcher<JSON = any>(
   input: RequestInfo,
   init?: RequestInit
 ): Promise<JSON> {
