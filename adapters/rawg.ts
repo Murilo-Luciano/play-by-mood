@@ -58,6 +58,7 @@ interface RawgGameDetailsResponse {
   metacritic: number;
   background_image: string;
   released: string;
+  added: number;
   tags: {
     id: number;
     name: string;
@@ -99,38 +100,16 @@ interface RawgGameScreenshotsResponse {
 
 export const MOST_POPULAR_PLATFORMS = [
   Platform.PC,
-  Platform.LINUX,
   Platform.APPLE_MACINTOSH,
+  Platform.LINUX,
+  Platform.WEB,
   Platform.PLAYSTATION,
   Platform.XBOX,
-  Platform.NINTENDO,
-  Platform.ANDROID,
   Platform.IOS,
+  Platform.ANDROID,
 ];
 
 export const RAWG_ITENS_PER_PAGE = 40;
-
-export const rawgGenres = {
-  [Genre.ACTION]: { id: 4 },
-  [Genre.INDIE]: { id: 51 },
-  [Genre.ADVENTURE]: { id: 3 },
-  [Genre.RPG]: { id: 5 },
-  [Genre.STRATEGY]: { id: 10 },
-  [Genre.SHOOTER]: { id: 2 },
-  [Genre.CASUAL]: { id: 40 },
-  [Genre.SIMULATION]: { id: 14 },
-  [Genre.PUZZLE]: { id: 7 },
-  [Genre.ARCADE]: { id: 11 },
-  [Genre.PLATFORMER]: { id: 83 },
-  [Genre.RACING]: { id: 1 },
-  [Genre.MASSIVELY_MULTIPLAYER]: { id: 59 },
-  [Genre.SPORTS]: { id: 15 },
-  [Genre.FIGHTING]: { id: 6 },
-  [Genre.FAMILY]: { id: 19 },
-  [Genre.BOARD_GAMES]: { id: 28 },
-  [Genre.EDUCATIONAL]: { id: 34 },
-  [Genre.CARD]: { id: 17 },
-};
 
 export const rawgParentPlatforms = {
   [Platform.PC]: { id: 1 },
@@ -140,27 +119,27 @@ export const rawgParentPlatforms = {
   [Platform.ANDROID]: { id: 8 },
   [Platform.APPLE_MACINTOSH]: { id: 5 },
   [Platform.LINUX]: { id: 6 },
+  [Platform.WEB]: { id: 14 },
   [Platform.NINTENDO]: { id: 7 },
   [Platform.ATARI]: { id: 9 },
   [Platform.COMMODORE_AMIGA]: { id: 10 },
   [Platform.SEGA]: { id: 11 },
   [Platform.PANASONIC_3DO]: { id: 12 },
   [Platform.NEO_GEO]: { id: 13 },
-  [Platform.WEB]: { id: 14 },
 };
 
-async function getGamesByGenres(genres: Genre[], page = 1) {
-  const genresIds = genres.map((genre) => rawgGenres[genre].id);
-
+async function getGamesByTags(tags: string[], page = 1) {
   const response = await axios.get<RawgListGamesResponse>(
     "https://api.rawg.io/api/games",
+
     {
       params: {
         key: process.env.RAWG_API_KEY,
-        genres: genresIds.toString(),
-        /**@todo: order by -added */
-        /**@todo: than order by -metacritic */
-        ordering: "-metacritic",
+        tags: tags.join(","),
+        ordering: "-added",
+        parent_platforms: MOST_POPULAR_PLATFORMS.map(
+          (platform) => rawgParentPlatforms[platform].id
+        ).join(","),
         page: page,
         page_size: RAWG_ITENS_PER_PAGE,
       },
@@ -196,4 +175,8 @@ async function getGameScreenshots(gameId: number) {
   return response.data.results;
 }
 
-export default { getGamesByGenres, getGameDetails, getGameScreenshots };
+export default {
+  getGamesByTags,
+  getGameDetails,
+  getGameScreenshots,
+};

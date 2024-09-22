@@ -1,3 +1,4 @@
+import { Mood } from "@/services/gameService";
 import { getModelForClass, index, mongoose, prop } from "@typegoose/typegoose";
 
 class Tag {
@@ -27,6 +28,8 @@ export class Games {
   @prop({ required: true }) public id!: number;
   @prop({ required: true }) public name!: string;
   @prop({ required: true }) public description!: string;
+  @prop({ required: true, enum: Mood, type: String }) public mood!: Mood;
+  @prop({ required: true }) public rawgAddedCount!: number;
   @prop({ required: true }) public metacriticRating!: number;
   @prop({ required: true }) public imageUrl!: string;
   @prop({ required: true }) public releasedDate!: string;

@@ -1,11 +1,8 @@
-import { Genre } from "@/adapters/rawg";
+import { Mood } from "@/services/gameService";
 import _ from "lodash";
 import { inngest } from "./client";
 
-async function enqueueGamesImportTasksByGenre(
-  genres: Genre[],
-  totalPages: number
-) {
+async function enqueueGamesImportTasksByGenre(mood: Mood, totalPages: number) {
   const tasksEnqueuer: (() => Promise<void>)[] = [];
 
   for (let page = 1; page <= totalPages; page++) {
@@ -13,7 +10,7 @@ async function enqueueGamesImportTasksByGenre(
       await inngest.send({
         name: "games/import",
         data: {
-          genres,
+          mood,
           page,
         },
       });

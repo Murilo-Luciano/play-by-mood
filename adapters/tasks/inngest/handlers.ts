@@ -1,6 +1,13 @@
-import rawg, { Genre } from "@/adapters/rawg";
+import rawg from "@/adapters/rawg";
 import connectDB from "@/config/db";
 import GamesModel from "@/models/Games";
+import {
+  BLOCKED_TAGS,
+  MINIMAL_METACRITIC_RATING,
+  MINIMAL_RAWG_ADDED_COUNT,
+  Mood,
+  TAGS_BY_MOOD,
+} from "@/services/gameService";
 import { GetEvents } from "inngest";
 import { inngest } from "./client";
 
@@ -10,12 +17,10 @@ export const importGames = inngest.createFunction(
   { id: "import-games", concurrency: 2 },
   { event: "games/import" },
   async ({ event, step }) => {
-    const { genres, page } = event.data;
+    const { mood, page } = event.data;
 
-    if (!isGenresValid(genres)) {
-      console.error(
-        `[inngest-import-game] Invalid genres ${genres.toString()}`
-      );
+    if (!isMoodValid(mood)) {
+      console.error(`[inngest-import-game] Invalid mood ${mood}`);
 
       return;
     }
@@ -26,11 +31,27 @@ export const importGames = inngest.createFunction(
       return;
     }
 
+    const tags = TAGS_BY_MOOD[mood];
+
+    if (!tags) {
+      console.error(
+        `[inngest-import-game] Tags not registered for mood ${mood}`
+      );
+
+      return;
+    }
+
+    if (!tags.length) {
+      console.error(`[inngest-import-game] No tags mood ${mood}`);
+
+      return;
+    }
+
     console.info(
-      `[inngest-import-game] Importing page ${page} of ${genres.toString()} games`
+      `[inngest-import-game] Importing page ${page} of ${mood} games`
     );
 
-    const gamesId = (await rawg.getGamesByGenres(genres, page)).map(
+    const gamesId = (await rawg.getGamesByTags(tags, page)).map(
       (game) => game.id
     );
 
@@ -39,6 +60,7 @@ export const importGames = inngest.createFunction(
         name: "games/import.details",
         data: {
           gameId: id,
+          mood,
         },
       })
     );
@@ -46,13 +68,13 @@ export const importGames = inngest.createFunction(
     console.info(
       `[inngest-import-game] Enqueuing ${
         gamesDetailEvents.length
-      } games of: page ${page} genre ${genres.toString()}`
+      } games of: page ${page} genre ${tags.toString()}`
     );
 
     await step.sendEvent("enqueue-games-detail-import", gamesDetailEvents);
 
     console.info(
-      `[inngest-import-game] Finished importing page ${page} of ${genres.toString()} games`
+      `[inngest-import-game] Finished importing page ${page} of ${tags.toString()} games`
     );
     return;
   }
@@ -62,10 +84,16 @@ export const importGameDetail = inngest.createFunction(
   { id: "import-game-details", concurrency: 2 },
   { event: "games/import.details" },
   async ({ event, step }) => {
-    const { gameId } = event.data;
+    const { gameId, mood } = event.data;
 
     if (!gameId) {
       console.error(`[inngest-import-game-details] Missing gameId`);
+      return;
+    }
+
+    if (!isMoodValid(mood)) {
+      console.error(`[inngest-import-game-details] Invalid mood ${mood}`);
+
       return;
     }
 
@@ -73,12 +101,41 @@ export const importGameDetail = inngest.createFunction(
 
     const game = await rawg.getGameDetails(gameId);
 
+    if (
+      game.tags
+        .map((tag) => tag.slug)
+        .some((slug) => BLOCKED_TAGS.includes(slug))
+    ) {
+      console.info(
+        `[inngest-import-game-details] Game ${gameId} has blocked tags`
+      );
+
+      return;
+    }
+
+    if (game.added < MINIMAL_RAWG_ADDED_COUNT) {
+      console.info(
+        `[inngest-import-game-details] Game ${gameId} added count is bellow the minimal`
+      );
+
+      return;
+    }
+
+    if (game.metacritic < MINIMAL_METACRITIC_RATING) {
+      console.info(
+        `[inngest-import-game-details] Game ${gameId} metacritic is bellow the minimal`
+      );
+
+      return;
+    }
+
     await connectDB();
     await GamesModel.findOneAndUpdate(
-      { id: game.id },
+      { id: game.id, mood },
       {
         name: game.name,
         description: game.description,
+        rawgAddedCount: game.added,
         metacriticRating: game.metacritic,
         imageUrl: game.background_image,
         releasedDate: game.released,
@@ -133,8 +190,6 @@ export const importGameScreenshots = inngest.createFunction(
   }
 );
 
-function isGenresValid(genres: any): genres is Genre[] {
-  if (!Array.isArray(genres)) return false;
-
-  return genres.every((genre) => Object.values(Genre).includes(genre));
+function isMoodValid(mood: any): mood is Mood {
+  return Object.values(Mood).includes(mood);
 }
