@@ -5,16 +5,17 @@ import Image from "next/image";
 // import { Mood } from "@/services/gameService";
 /**@todo: Get from service folder ? */
 enum Mood {
-  HAPPY = "HAPPY",
-  SAD = "SAD",
   EXCITED = "EXCITED",
-  BORED = "BORED",
-  STRESSED = "STRESSED",
   RELAXED = "RELAXED",
-  ENERGETIC = "ENERGETIC",
-  TIRED = "TIRED",
-  ANXIOUS = "ANXIOUS",
-  INSPIRED = "INSPIRED",
+  FOCUSED = "FOCUSED",
+  ADVENTUROUS = "ADVENTUROUS",
+  COMPETITIVE = "COMPETITIVE",
+  CURIOUS = "CURIOUS",
+  NOSTALGIC = "NOSTALGIC",
+  SOCIAL = "SOCIAL",
+  ANGRY = "ANGRY",
+  STRATEGIC = "STRATEGIC",
+  PLAYFUL = "PLAYFUL",
 }
 
 export default function Home() {
@@ -66,7 +67,7 @@ function MoodButton() {
   return (
     <a
       className="w-44 h-44 flex flex-col justify-between items-center"
-      href="/games/HAPPY"
+      href="/games/RELAXED"
     >
       <Image src={"/happy.png"} alt="" height={132} width={132} />
       <div className="bg-purple-500 w-full rounded-b-2xl">

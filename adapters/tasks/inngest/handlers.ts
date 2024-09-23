@@ -182,7 +182,7 @@ export const importGameScreenshots = inngest.createFunction(
     const screenshots = await rawg.getGameScreenshots(gameId);
 
     await connectDB();
-    await GamesModel.findOneAndUpdate({ id: gameId }, { screenshots });
+    await GamesModel.updateMany({ id: gameId }, { screenshots });
 
     console.info(
       `[inngest-import-game-screenshots] Finished importing ${gameId} screenshots`
