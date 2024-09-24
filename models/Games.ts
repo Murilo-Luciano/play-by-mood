@@ -1,5 +1,6 @@
 import { Mood } from "@/services/gameService";
 import { getModelForClass, index, mongoose, prop } from "@typegoose/typegoose";
+import { TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
 
 class Tag {
   @prop({ required: true }) public id!: number;
@@ -24,7 +25,7 @@ class Screenshot {
 }
 
 @index({ id: 1 })
-export class Games {
+export class Games extends TimeStamps {
   @prop({ required: true }) public id!: number;
   @prop({ required: true }) public name!: string;
   @prop({ required: true }) public description!: string;

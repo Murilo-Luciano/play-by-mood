@@ -41,7 +41,7 @@ export const importGames = inngest.createFunction(
       return;
     }
 
-    if (!tags.length) {
+    if (!tags.include.length) {
       console.error(`[inngest-import-game] No tags mood ${mood}`);
 
       return;
@@ -51,7 +51,7 @@ export const importGames = inngest.createFunction(
       `[inngest-import-game] Importing page ${page} of ${mood} games`
     );
 
-    const gamesId = (await rawg.getGamesByTags(tags, page)).map(
+    const gamesId = (await rawg.getGamesByTags(tags.include, page)).map(
       (game) => game.id
     );
 
@@ -101,6 +101,19 @@ export const importGameDetail = inngest.createFunction(
 
     const game = await rawg.getGameDetails(gameId);
 
+    const excludeTags = TAGS_BY_MOOD[mood]?.exclude || [];
+
+    if (
+      game.tags
+        .map((tag) => tag.slug)
+        .some((slug) => excludeTags.includes(slug))
+    ) {
+      console.info(
+        `[inngest-import-game-details] Game ${gameId} has exclude tags`
+      );
+
+      return;
+    }
     if (
       game.tags
         .map((tag) => tag.slug)
