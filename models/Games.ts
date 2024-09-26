@@ -1,6 +1,11 @@
 import { Mood } from "@/services/gameService";
-import { getModelForClass, index, mongoose, prop } from "@typegoose/typegoose";
-import { TimeStamps } from "@typegoose/typegoose/lib/defaultClasses";
+import {
+  ReturnModelType,
+  getModelForClass,
+  index,
+  mongoose,
+  prop,
+} from "@typegoose/typegoose";
 
 class Tag {
   @prop({ required: true }) public id!: number;
@@ -25,7 +30,7 @@ class Screenshot {
 }
 
 @index({ id: 1 })
-export class Games extends TimeStamps {
+export class Games {
   @prop({ required: true }) public id!: number;
   @prop({ required: true }) public name!: string;
   @prop({ required: true }) public description!: string;
@@ -42,7 +47,10 @@ export class Games extends TimeStamps {
 }
 
 const GamesModel =
-  mongoose.models.games ||
-  getModelForClass(Games, { options: { customName: "games" } });
+  (mongoose.models.games as ReturnModelType<typeof Games, {}>) ||
+  getModelForClass(Games, {
+    schemaOptions: { timestamps: true },
+    options: { customName: "games" },
+  });
 
 export default GamesModel;
