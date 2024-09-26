@@ -1,6 +1,7 @@
 "use client";
 
 import { buttonVariants } from "@/components/ui/button";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Games } from "@/models/Games";
 import DOMPurify from "dompurify";
@@ -25,10 +26,14 @@ export default function Page({ params }: { params: { slug: string } }) {
       <main className="flex flex-col p-4 text-center overflow-x-hidden">
         <h1 className="text-xl font-extrabold tracking-tight">PlayByMood</h1>
         <Skeleton className="w-full h-9 my-16" />
-        <div className="flex flex-row gap-3 self-start">
-          <Skeleton className="w-[264px] h-[148px] rounded-2xl" />
-          <Skeleton className="w-[264px] h-[148px] rounded-2xl" />
-        </div>
+        <ScrollArea className="self-start p-4 rounded-lg border w-full">
+          <div className="flex flex-row gap-3 overflow-y-auto">
+            <Skeleton className="w-[264px] h-[148px] rounded-2xl" />
+            <Skeleton className="w-[264px] h-[148px] rounded-2xl" />
+          </div>
+
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
 
         <div className="flex flex-col gap-4 mt-4">
           <div className="flex gap-8">
@@ -89,18 +94,23 @@ export default function Page({ params }: { params: { slug: string } }) {
       <h2 className="text-4xl font-extrabold tracking-tight my-14">
         {data.name}
       </h2>
-      <div className="flex flex-row gap-3 overflow-y-auto">
-        {data.screenshots?.map((e, k) => (
-          <Image
-            key={k}
-            src={(e as any).image}
-            alt="Game screenshot"
-            width={264}
-            height={148}
-            className="rounded-2xl w-auto h-auto"
-          />
-        ))}
-      </div>
+
+      <ScrollArea className="p-4 rounded-lg border">
+        <div className="flex flex-row gap-3 overflow-y-auto">
+          {data.screenshots?.map((e, k) => (
+            <Image
+              key={k}
+              src={(e as any).image}
+              alt="Game screenshot"
+              width={264}
+              height={148}
+              className="rounded-2xl w-auto h-auto mb-2"
+            />
+          ))}
+        </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
+
       <div className="flex flex-col gap-4">
         <div className="flex flex-row flex-wrap gap-8 mt-4">
           <div className="text-sm text-start">
