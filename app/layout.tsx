@@ -16,7 +16,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <div className="text-center pt-4">
+          <a className="text-xl font-extrabold tracking-tight mb-5" href="/">
+            PlayByMood
+          </a>
+        </div>
+        {children}
+      </body>
     </html>
   );
 }

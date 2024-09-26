@@ -24,10 +24,6 @@ enum Mood {
 export default function Home() {
   return (
     <main className="flex flex-col text-center p-4">
-      <a className="text-xl font-extrabold tracking-tight mb-5" href="/">
-        PlayByMood
-      </a>
-
       <h2 className="text-start font-semibold text-lg">
         Find good games based on your mood!
       </h2>

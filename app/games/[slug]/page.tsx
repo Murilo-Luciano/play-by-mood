@@ -90,7 +90,6 @@ export default function Page({ params }: { params: { slug: string } }) {
 
   return (
     <main className="flex flex-col text-center p-4">
-      <h1 className="text-xl font-extrabold tracking-tight mb-5">PlayByMood</h1>
       <h2 className="text-4xl font-extrabold tracking-tight my-14">
         {data.name}
       </h2>
