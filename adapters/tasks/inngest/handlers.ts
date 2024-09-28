@@ -5,9 +5,9 @@ import {
   BLOCKED_TAGS,
   MINIMAL_METACRITIC_RATING,
   MINIMAL_RAWG_ADDED_COUNT,
-  Mood,
   TAGS_BY_MOOD,
 } from "@/services/gameService";
+import { Mood } from "@/services/types";
 import { GetEvents } from "inngest";
 import { inngest } from "./client";
 

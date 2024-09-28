@@ -1,25 +1,60 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Mood } from "@/services/types";
+import _ from "lodash";
 import Image from "next/image";
 import Link from "next/link";
 
-// import { Mood } from "@/services/gameService";
-/**@todo: Get from service folder ? */
-enum Mood {
-  EXCITED = "EXCITED",
-  RELAXED = "RELAXED",
-  FOCUSED = "FOCUSED",
-  ADVENTUROUS = "ADVENTUROUS",
-  COMPETITIVE = "COMPETITIVE",
-  CURIOUS = "CURIOUS",
-  NOSTALGIC = "NOSTALGIC",
-  SOCIAL = "SOCIAL",
-  ANGRY = "ANGRY",
-  STRATEGIC = "STRATEGIC",
-  PLAYFUL = "PLAYFUL",
-}
+const moods = {
+  [Mood.EXCITED]: {
+    imageSrc: "/excited.png",
+    description: "High-energy, looking for an adrenaline rush.",
+  },
+  [Mood.RELAXED]: {
+    imageSrc: "/relaxed.png",
+    description: "Wanting a calm, soothing experience.",
+  },
+  [Mood.FOCUSED]: {
+    imageSrc: "/focused.png",
+    description: "Ready to take on challenges and puzzles.",
+  },
+  [Mood.ADVENTUROUS]: {
+    imageSrc: "/adventurous.png",
+    description: "Eager to explore new worlds and environments.",
+  },
+
+  [Mood.COMPETITIVE]: {
+    imageSrc: "/competitive.png",
+    description: "In the mood for some intense multiplayer action.",
+  },
+  [Mood.CURIOUS]: {
+    imageSrc: "/curious.png",
+    description: "Looking to discover new stories or mechanics.",
+  },
+  [Mood.NOSTALGIC]: {
+    imageSrc: "/nostalgic.png",
+    description: "Longing for classic or retro gaming experiences.",
+  },
+  [Mood.SOCIAL]: {
+    imageSrc: "/social.png",
+    description: "Looking to play games with friends or meet new people.",
+  },
+  [Mood.ANGRY]: {
+    imageSrc: "/angry.png",
+    description: "Wanting to vent some frustration or blow off steam.",
+  },
+  [Mood.STRATEGIC]: {
+    imageSrc: "/strategic.png",
+    description:
+      "Interested in tactical games that require planning and decision-making.",
+  },
+  [Mood.PLAYFUL]: {
+    imageSrc: "/playful.png",
+    description: "Wanting a light-hearted and fun experience.",
+  },
+};
 
 export default function Home() {
   return (
@@ -34,17 +69,21 @@ export default function Home() {
 
       <ScrollArea className="h-[600px] w-full p-4 rounded-lg border">
         <div className="flex flex-wrap gap-6 justify-center">
-          <MoodButton />
-          <MoodButton />
-          <MoodButton />
-          <MoodButton />
-          <MoodButton />
-          <MoodButton />
-          <MoodButton />
-          <MoodButton />
-          <MoodButton />
-          <MoodButton />
-          <MoodButton />
+          {Object.entries(moods).map(([key, proprieties]) => (
+            <Link
+              href={`/games/${key}`}
+              key={key}
+              className={`${buttonVariants({
+                variant: "outline",
+              })} h-auto w-full flex flex-col items-center justify-start bg-primary-foreground border-purple-500 rounded-xl shadow`}
+            >
+              <Image src={proprieties.imageSrc} alt="" height={48} width={48} />
+              <span className="font-semibold text-lg">{_.capitalize(key)}</span>
+              <p className="text-base font-light text-wrap">
+                {proprieties.description}
+              </p>
+            </Link>
+          ))}
         </div>
         <ScrollBar />
       </ScrollArea>

@@ -8,20 +8,7 @@ import taskEnqueuer from "@/adapters/tasks/inngest/enqueuers";
 import connectDB from "@/config/db";
 import GamesModel, { Games } from "@/models/Games";
 import _ from "lodash";
-
-export enum Mood {
-  EXCITED = "EXCITED",
-  RELAXED = "RELAXED",
-  FOCUSED = "FOCUSED",
-  ADVENTUROUS = "ADVENTUROUS",
-  COMPETITIVE = "COMPETITIVE",
-  CURIOUS = "CURIOUS",
-  NOSTALGIC = "NOSTALGIC",
-  SOCIAL = "SOCIAL",
-  ANGRY = "ANGRY",
-  STRATEGIC = "STRATEGIC",
-  PLAYFUL = "PLAYFUL",
-}
+import { Mood } from "./types";
 
 export const MINIMAL_RAWG_ADDED_COUNT = 1000;
 export const MINIMAL_METACRITIC_RATING = 70;

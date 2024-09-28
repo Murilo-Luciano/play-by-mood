@@ -1,4 +1,4 @@
-import { Mood } from "@/services/gameService";
+import { Mood } from "@/services/types";
 import {
   ReturnModelType,
   getModelForClass,

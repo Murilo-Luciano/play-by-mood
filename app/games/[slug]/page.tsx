@@ -5,6 +5,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Games } from "@/models/Games";
 import DOMPurify from "dompurify";
+import _ from "lodash";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -24,7 +25,6 @@ export default function Page({ params }: { params: { slug: string } }) {
   if (isLoading)
     return (
       <main className="flex flex-col p-4 text-center overflow-x-hidden">
-        <h1 className="text-xl font-extrabold tracking-tight">PlayByMood</h1>
         <Skeleton className="w-full h-9 my-16" />
         <ScrollArea className="self-start p-4 rounded-lg border w-full">
           <div className="flex flex-row gap-3 overflow-y-auto">
@@ -59,13 +59,9 @@ export default function Page({ params }: { params: { slug: string } }) {
       </main>
     );
 
-  if (!data || error)
+  if (!data || _.isEmpty(data) || error)
     return (
       <main className="flex flex-col p-4 items-center">
-        <h1 className="text-xl font-extrabold tracking-tight mb-10">
-          PlayByMood
-        </h1>
-
         <div className="flex flex-col items-center gap-4">
           <TriangleAlertIcon className="h-16 w-16 text-gray-500 dark:text-gray-400" />
           <div className="space-y-2 text-center">

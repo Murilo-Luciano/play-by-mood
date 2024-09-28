@@ -1,5 +1,6 @@
 import { Platform } from "@/adapters/rawg";
-import gameService, { Mood } from "@/services/gameService";
+import gameService from "@/services/gameService";
+import { Mood } from "@/services/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
