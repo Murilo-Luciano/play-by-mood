@@ -4,7 +4,6 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Mood } from "@/services/types";
 import _ from "lodash";
-import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -60,21 +59,6 @@ const moods = {
 export default function Home() {
   return (
     <main className="flex flex-col text-center p-4">
-      <Head>
-        <title>Play By Mood</title>
-        <meta
-          name="description"
-          content="Find good games based on your mood!"
-          key="desc"
-        />
-
-        <meta property="og:title" content="Play By Mood" />
-        <meta
-          property="og:description"
-          content="Find good games based on your mood!"
-        />
-      </Head>
-
       <h2 className="text-start font-semibold text-lg">
         Find good games based on your mood!
       </h2>
