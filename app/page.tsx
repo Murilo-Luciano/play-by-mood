@@ -58,17 +58,18 @@ const moods = {
 
 export default function Home() {
   return (
-    <main className="flex flex-col text-center p-4">
-      <h2 className="text-start font-semibold text-lg">
+    <main className="flex flex-col text-center p-4 md:px-24">
+      <h2 className="text-start font-semibold text-lg md:text-xl">
         Find good games based on your mood!
       </h2>
-      <p className="text-start text-base font-light ">
+      <p className="text-start text-base md:text-lg font-light ">
         What’s your mood today ?
       </p>
+
       <div className="h-4" />
 
       <ScrollArea className="h-[600px] w-full p-4 rounded-lg border">
-        <div className="flex flex-wrap gap-6 justify-center">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {Object.entries(moods).map(([key, proprieties]) => (
             <Link
               href={`/games/${key}`}
@@ -77,7 +78,13 @@ export default function Home() {
                 variant: "outline",
               })} h-auto w-full flex flex-col items-center justify-start bg-primary-foreground border-purple-500 rounded-xl shadow`}
             >
-              <Image src={proprieties.imageSrc} alt="" height={48} width={48} />
+              <Image
+                src={proprieties.imageSrc}
+                alt={`${key.toLowerCase()} emoji`}
+                height={48}
+                width={48}
+                className="mb-2"
+              />
               <span className="font-semibold text-lg">{_.capitalize(key)}</span>
               <p className="text-base font-light text-wrap">
                 {proprieties.description}

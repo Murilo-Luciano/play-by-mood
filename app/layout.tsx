@@ -26,7 +26,10 @@ export default function RootLayout({
           <meta property="og:image" content="/logo.jpg" />
         </Head>
         <div className="text-center pt-4">
-          <a className="text-xl font-extrabold tracking-tight mb-5" href="/">
+          <a
+            className="text-xl md:text-2xl font-extrabold tracking-tight mb-5"
+            href="/"
+          >
             PlayByMood
           </a>
         </div>
