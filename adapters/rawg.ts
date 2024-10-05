@@ -1,4 +1,5 @@
 import axios from "axios";
+import { MOST_POPULAR_PLATFORMS, Platform } from "./types";
 
 export enum Genre {
   ACTION = "action",
@@ -20,23 +21,6 @@ export enum Genre {
   BOARD_GAMES = "board-games",
   EDUCATIONAL = "educational",
   CARD = "card",
-}
-
-export enum Platform {
-  PC = "PC",
-  PLAYSTATION = "PlayStation",
-  XBOX = "Xbox",
-  IOS = "iOS",
-  ANDROID = "Android",
-  APPLE_MACINTOSH = "Apple Macintosh",
-  LINUX = "Linux",
-  NINTENDO = "Nintendo",
-  ATARI = "Atari",
-  COMMODORE_AMIGA = "Commodore / Amiga",
-  SEGA = "SEGA",
-  PANASONIC_3DO = "3DO",
-  NEO_GEO = "Neo Geo",
-  WEB = "Web",
 }
 
 /** https://api.rawg.io/docs/#operation/games_list */
@@ -97,17 +81,6 @@ interface RawgGameScreenshotsResponse {
     is_deleted: boolean;
   }[];
 }
-
-export const MOST_POPULAR_PLATFORMS = [
-  Platform.PC,
-  Platform.APPLE_MACINTOSH,
-  Platform.LINUX,
-  Platform.WEB,
-  Platform.PLAYSTATION,
-  Platform.XBOX,
-  Platform.IOS,
-  Platform.ANDROID,
-];
 
 export const RAWG_ITENS_PER_PAGE = 40;
 

@@ -1,10 +1,7 @@
-import {
-  Platform,
-  RAWG_ITENS_PER_PAGE,
-  rawgParentPlatforms,
-} from "@/adapters/rawg";
+import { RAWG_ITENS_PER_PAGE, rawgParentPlatforms } from "@/adapters/rawg";
 
 import taskEnqueuer from "@/adapters/tasks/inngest/enqueuers";
+import { Platform } from "@/adapters/types";
 import connectDB from "@/config/db";
 import GamesModel, { Games } from "@/models/Games";
 import _ from "lodash";

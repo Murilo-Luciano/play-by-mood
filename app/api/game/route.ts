@@ -1,4 +1,4 @@
-import { Platform } from "@/adapters/rawg";
+import { Platform } from "@/adapters/types";
 import gameService from "@/services/gameService";
 import { Mood } from "@/services/types";
 import { NextRequest, NextResponse } from "next/server";
@@ -25,6 +25,6 @@ function isMoodValid(mood: string): mood is Mood {
 
 function isPlatformsValid(platforms: string[]): platforms is Platform[] {
   return platforms.every((platform) =>
-    Object.keys(Platform).includes(platform as Platform)
+    Object.values(Platform).includes(platform as Platform)
   );
 }

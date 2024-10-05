@@ -1,11 +1,29 @@
 "use client";
 
+import { MOST_POPULAR_PLATFORMS } from "@/adapters/types";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Mood } from "@/services/types";
+import { PlusCircledIcon } from "@radix-ui/react-icons";
 import _ from "lodash";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
 const moods = {
   [Mood.EXCITED]: {
@@ -57,11 +75,80 @@ const moods = {
 };
 
 export default function Home() {
+  const [selectedPlatforms, setSelectedPlatforms] = useState(
+    MOST_POPULAR_PLATFORMS
+  );
+
   return (
     <main className="flex flex-col text-center p-4 md:px-24">
       <h2 className="text-start font-semibold text-lg md:text-xl">
         Find good games based on your mood!
       </h2>
+
+      <div className="h-4" />
+
+      <p className="text-start text-base md:text-lg font-light ">
+        Select your preferred platforms
+      </p>
+
+      <div className="h-4" />
+
+      <Popover>
+        <PopoverTrigger className="self-start">
+          <Button variant="outline" className="border-dashed border-purple-500">
+            <PlusCircledIcon className="mr-2 h-4 w-4" />
+            Platforms
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent>
+          <Command>
+            <CommandInput placeholder="Platform" />
+            <CommandList>
+              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandGroup>
+                {MOST_POPULAR_PLATFORMS.map((platform) => (
+                  <CommandItem key={platform}>
+                    <Checkbox
+                      id={platform}
+                      checked={selectedPlatforms.includes(platform)}
+                      onCheckedChange={() =>
+                        selectedPlatforms.includes(platform)
+                          ? setSelectedPlatforms(
+                              selectedPlatforms.filter((p) => p !== platform)
+                            )
+                          : setSelectedPlatforms([
+                              ...selectedPlatforms,
+                              platform,
+                            ])
+                      }
+                    />
+                    <label className="text-base ml-2">
+                      {_.capitalize(platform)}
+                    </label>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+
+              {selectedPlatforms.length > 0 && (
+                <>
+                  <CommandSeparator />
+                  <CommandGroup>
+                    <CommandItem
+                      onSelect={() => setSelectedPlatforms([])}
+                      className="justify-center text-center"
+                    >
+                      Clear filters
+                    </CommandItem>
+                  </CommandGroup>
+                </>
+              )}
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+
+      <div className="h-4" />
+
       <p className="text-start text-base md:text-lg font-light ">
         What’s your mood today ?
       </p>
@@ -72,7 +159,7 @@ export default function Home() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {Object.entries(moods).map(([key, proprieties]) => (
             <Link
-              href={`/games/${key}`}
+              href={`/games/${key}?platforms=${selectedPlatforms.join(",")}`}
               key={key}
               className={`${buttonVariants({
                 variant: "outline",
@@ -120,23 +207,5 @@ export default function Home() {
         </p>
       </div>
     </main>
-  );
-}
-
-function MoodButton() {
-  return (
-    <Link href="/games/EXCITED">
-      <Button
-        variant="outline"
-        className="h-auto flex flex-col items-center justify-start bg-primary-foreground border-purple-500 rounded-xl shadow"
-      >
-        <Image src={"/happy.png"} alt="" height={48} width={48} />
-        <span className="font-semibold text-lg">Strategic</span>
-        <p className="text-base font-light text-wrap">
-          Interested in tactical games that require planning and
-          decision-making.
-        </p>
-      </Button>
-    </Link>
   );
 }

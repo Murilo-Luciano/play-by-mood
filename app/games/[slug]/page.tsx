@@ -8,6 +8,7 @@ import DOMPurify from "dompurify";
 import _ from "lodash";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import useSWR from "swr";
 
@@ -16,10 +17,19 @@ const TEXT_MAX_LENGTH = 400;
 export default function Page({ params }: { params: { slug: string } }) {
   const [readMore, setReadMore] = useState(false);
 
+  const searchParams = useSearchParams();
+  const selectedPlatforms = searchParams.get("platforms");
+
   const { data, error, isLoading } = useSWR<Games>(
-    `/api/game?mood=${params.slug}`,
+    `/api/game?mood=${params.slug}&${
+      selectedPlatforms?.length && `platforms=${selectedPlatforms}`
+    }`,
     fetcher,
-    { revalidateOnReconnect: false, revalidateOnFocus: false }
+    {
+      revalidateOnReconnect: false,
+      revalidateOnFocus: false,
+      errorRetryCount: 1,
+    }
   );
 
   if (isLoading)
@@ -85,7 +95,7 @@ export default function Page({ params }: { params: { slug: string } }) {
   const sanitizedHtml = DOMPurify.sanitize(data.description);
 
   return (
-    <main className="flex flex-col text-center p-4">
+    <main className="flex flex-col text-center p-4 md:px-96">
       <h2 className="text-4xl font-extrabold tracking-tight my-14">
         {data.name}
       </h2>
@@ -180,7 +190,14 @@ async function fetcher<JSON = any>(
   init?: RequestInit
 ): Promise<JSON> {
   const res = await fetch(input, init);
-  return res.json();
+
+  const json = await res.json();
+
+  if (!res.ok) {
+    throw new Error(`${res.status} - ${json.message}`);
+  }
+
+  return json;
 }
 
 function applyClassMapping(html: string): string {
