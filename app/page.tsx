@@ -1,7 +1,7 @@
 "use client";
 
 import { MOST_POPULAR_PLATFORMS } from "@/adapters/types";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Command,
@@ -94,11 +94,13 @@ export default function Home() {
       <div className="h-4" />
 
       <Popover>
-        <PopoverTrigger className="self-start">
-          <Button variant="outline" className="border-dashed border-purple-500">
-            <PlusCircledIcon className="mr-2 h-4 w-4" />
-            Platforms
-          </Button>
+        <PopoverTrigger
+          className={`self-start border-dashed border-purple-500 ${buttonVariants(
+            { variant: "outline" }
+          )}`}
+        >
+          <PlusCircledIcon className="mr-2 h-4 w-4" />
+          Platforms
         </PopoverTrigger>
         <PopoverContent>
           <Command>
@@ -122,7 +124,7 @@ export default function Home() {
                             ])
                       }
                     />
-                    <label className="text-base ml-2">
+                    <label htmlFor={platform} className="text-base ml-2">
                       {_.capitalize(platform)}
                     </label>
                   </CommandItem>
