@@ -11,6 +11,8 @@ export const MINIMAL_RAWG_ADDED_COUNT = 1000;
 export const MINIMAL_METACRITIC_RATING = 70;
 export const BLOCKED_TAGS = ["nsfw", "adult", "erotic"];
 
+/**@todo: Adicionar busca por genre */
+/** Algumas buscas dever ser genre e tags e outras genre ou tags */
 export const TAGS_BY_MOOD: Record<
   Mood,
   { include: string[]; exclude: string[] }
@@ -63,6 +65,7 @@ export const TAGS_BY_MOOD: Record<
     exclude: ["relaxing", "cute", "calm", "peaceful"],
   },
   [Mood.STRATEGIC]: {
+    // adicionar genre strategy no filtro
     include: [
       "economy",
       "city-builder",

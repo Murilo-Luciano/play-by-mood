@@ -66,15 +66,13 @@ export const importGames = inngest.createFunction(
     );
 
     console.info(
-      `[inngest-import-game] Enqueuing ${
-        gamesDetailEvents.length
-      } games of: page ${page} genre ${tags.toString()}`
+      `[inngest-import-game] Enqueuing ${gamesDetailEvents.length} games of: page ${page} mood ${mood}`
     );
 
     await step.sendEvent("enqueue-games-detail-import", gamesDetailEvents);
 
     console.info(
-      `[inngest-import-game] Finished importing page ${page} of ${tags.toString()} games`
+      `[inngest-import-game] Finished importing page ${page} of ${mood} games`
     );
     return;
   }
