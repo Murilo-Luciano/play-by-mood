@@ -40,7 +40,10 @@ export const TAGS_BY_MOOD: Record<
     include: ["relaxing", "cute", "calm", "peaceful"],
     exclude: [],
   },
-  [Mood.FOCUSED]: { include: ["puzzle"], exclude: [] },
+  [Mood.FOCUSED]: {
+    include: ["puzzle"], // deveria ser genre ( não existe tag puzzle )
+    exclude: [],
+  },
   [Mood.ADVENTUROUS]: {
     include: ["exploration", "open-world", "action-adventure"],
     exclude: [],
@@ -69,7 +72,7 @@ export const TAGS_BY_MOOD: Record<
       "tactical",
       "rts",
     ],
-    exclude: [],
+    exclude: ["fps"],
   },
   [Mood.PLAYFUL]: {
     include: ["local-multiplayer", "local-co-op"],
