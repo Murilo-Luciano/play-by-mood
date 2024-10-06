@@ -14,6 +14,15 @@ import useSWR from "swr";
 
 const TEXT_MAX_LENGTH = 400;
 
+/**@todo: Ajustar sugestões ( olhar comentários no back ) */
+
+/**@todo: Adicionar texto que informe qual é o mood da sugestão */
+/**@todo: Adicionar Opção para atualizar a sugestão */
+/**@todo: Adicionar Opção para escolher outro mood ( ao voltar para a tela inicial, manter as platforms preferidas ) */
+/**@todo: Tratar loading de screenshots */
+/**@todo: Repensar UI desktop */
+/**@todo: Separar componentes em arquivos diferentes */
+
 export default function Page({ params }: { params: { slug: string } }) {
   const [readMore, setReadMore] = useState(false);
 
