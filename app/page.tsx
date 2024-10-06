@@ -88,14 +88,14 @@ export default function Home() {
       <div className="h-4" />
 
       <p className="text-start text-base md:text-lg font-light ">
-        Select your preferred platforms
+        Select your preferred platforms:
       </p>
 
       <div className="h-4" />
 
       <Popover>
         <PopoverTrigger
-          className={`self-start border-dashed border-purple-500 ${buttonVariants(
+          className={`self-start border-dashed border-purple-500 md:w-[200px] ${buttonVariants(
             { variant: "outline" }
           )}`}
         >
@@ -124,7 +124,7 @@ export default function Home() {
                             ])
                       }
                     />
-                    <label htmlFor={platform} className="text-base ml-2">
+                    <label htmlFor={platform} className="text-base ml-2 w-full">
                       {_.capitalize(platform)}
                     </label>
                   </CommandItem>
@@ -149,7 +149,7 @@ export default function Home() {
         </PopoverContent>
       </Popover>
 
-      <div className="h-4" />
+      <div className="h-8" />
 
       <p className="text-start text-base md:text-lg font-light ">
         What’s your mood today ?
