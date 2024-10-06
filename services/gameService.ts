@@ -47,6 +47,7 @@ export const TAGS_BY_MOOD: Record<
     exclude: [],
   },
   [Mood.ADVENTUROUS]: {
+    // tbm buscar pelo genre adventure no filtro ( n precisa ser genre E tags )
     include: ["exploration", "open-world", "action-adventure"],
     exclude: [],
   },
@@ -78,6 +79,8 @@ export const TAGS_BY_MOOD: Record<
     exclude: ["fps"],
   },
   [Mood.PLAYFUL]: {
+    // adicionar genre casual no filtro
+
     include: ["local-multiplayer", "local-co-op"],
     exclude: [],
   },
