@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -105,7 +106,7 @@ export default function Page({ params }: { params: { slug: string } }) {
 
   return (
     <main className="flex flex-col text-center p-4 md:px-96">
-      <h2 className="text-4xl font-extrabold tracking-tight my-14">
+      <h2 className="text-4xl md:text-start font-extrabold tracking-tight my-14">
         {data.name}
       </h2>
 
@@ -180,7 +181,13 @@ export default function Page({ params }: { params: { slug: string } }) {
 
         <div className="text-sm text-start">
           <p className="text-muted-foreground">Key words</p>
-          <p>{data.tags.map((p) => p.name).join(", ")}</p>
+          <div className="flex flex-wrap gap-2 mt-1">
+            {data.tags.map((p) => (
+              <Badge key={p.id} className="rounded-xl">
+                {p.name}
+              </Badge>
+            ))}
+          </div>
         </div>
 
         <p>
