@@ -15,15 +15,6 @@ import useSWR from "swr";
 
 const TEXT_MAX_LENGTH = 400;
 
-/**@todo: Ajustar sugestões ( olhar comentários no back ) */
-
-/**@todo: Adicionar texto que informe qual é o mood da sugestão */
-/**@todo: Adicionar Opção para atualizar a sugestão */
-/**@todo: Adicionar Opção para escolher outro mood ( ao voltar para a tela inicial, manter as platforms preferidas ) */
-/**@todo: Tratar loading de screenshots */
-/**@todo: Repensar UI desktop */
-/**@todo: Separar componentes em arquivos diferentes */
-
 export default function Page({ params }: { params: { slug: string } }) {
   const [readMore, setReadMore] = useState(false);
 
@@ -106,10 +97,26 @@ export default function Page({ params }: { params: { slug: string } }) {
 
   return (
     <main className="flex flex-col text-center p-4 md:px-96">
-      <h2 className="text-4xl md:text-start font-extrabold tracking-tight my-14">
+      <div className="bg-background border border-purple-500 rounded-2xl flex gap-2 text-start px-4 py-2">
+        <div className="">
+          <Image
+            src={`/${params.slug.toLocaleLowerCase()}.png`}
+            alt="emoji"
+            width={24}
+            height={24}
+          />
+        </div>
+        <div className="">
+          <h5 className="font-medium">Feeling {_.capitalize(params.slug)} ?</h5>
+          <p className="text-sm">Here's one game you might enjoy!</p>
+        </div>
+      </div>
+
+      <h2 className="text-4xl text-start font-extrabold tracking-tight mb-4 mt-8">
         {data.name}
       </h2>
 
+      <p className="text-start text-muted-foreground">Screenshots</p>
       <ScrollArea className="p-4 rounded-lg border">
         <div className="flex flex-row gap-3 overflow-y-auto">
           {data.screenshots?.map((e, k) => (
