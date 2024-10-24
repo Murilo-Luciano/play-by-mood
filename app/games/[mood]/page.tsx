@@ -15,14 +15,14 @@ import useSWR from "swr";
 
 const TEXT_MAX_LENGTH = 400;
 
-export default function Page({ params }: { params: { slug: string } }) {
+export default function Page({ params }: { params: { mood: string } }) {
   const [readMore, setReadMore] = useState(false);
 
   const searchParams = useSearchParams();
   const selectedPlatforms = searchParams.get("platforms");
 
   const { data, error, isLoading } = useSWR<Games>(
-    `/api/game?mood=${params.slug}&${
+    `/api/game?mood=${params.mood}&${
       selectedPlatforms?.length && `platforms=${selectedPlatforms}`
     }`,
     fetcher,
@@ -100,14 +100,14 @@ export default function Page({ params }: { params: { slug: string } }) {
       <div className="bg-background border border-purple-500 rounded-2xl flex gap-2 text-start px-4 py-2">
         <div className="">
           <Image
-            src={`/${params.slug.toLocaleLowerCase()}.png`}
+            src={`/${params.mood.toLocaleLowerCase()}.png`}
             alt="emoji"
             width={24}
             height={24}
           />
         </div>
         <div className="">
-          <h5 className="font-medium">Feeling {_.capitalize(params.slug)} ?</h5>
+          <h5 className="font-medium">Feeling {_.capitalize(params.mood)} ?</h5>
           <p className="text-sm">Here's one game you might enjoy!</p>
         </div>
       </div>
