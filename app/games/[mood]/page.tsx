@@ -1,10 +1,11 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Games } from "@/models/Games";
+import { UpdateIcon } from "@radix-ui/react-icons";
 import DOMPurify from "dompurify";
 import _ from "lodash";
 import Image from "next/image";
@@ -21,7 +22,7 @@ export default function Page({ params }: { params: { mood: string } }) {
   const searchParams = useSearchParams();
   const selectedPlatforms = searchParams.get("platforms");
 
-  const { data, error, isLoading } = useSWR<Games>(
+  const { data, error, isLoading, mutate } = useSWR<Games>(
     `/api/game?mood=${params.mood}&${
       selectedPlatforms?.length ? `platforms=${selectedPlatforms}` : ""
     }`,
@@ -205,6 +206,14 @@ export default function Page({ params }: { params: { mood: string } }) {
             ))}
           </div>
         </div>
+
+        <Button
+          onClick={() => mutate(undefined, { revalidate: true })}
+          className="mt-4"
+          variant={"outline"}
+        >
+          <UpdateIcon className="mr-1" /> Try a new suggestion
+        </Button>
 
         <p>
           Data provided by{" "}
