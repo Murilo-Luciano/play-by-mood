@@ -209,7 +209,7 @@ export default function Page({ params }: { params: { mood: string } }) {
 
         <Button
           onClick={() => mutate(undefined, { revalidate: true })}
-          className="mt-4"
+          className="mt-4 max-w-96"
           variant={"outline"}
         >
           <UpdateIcon className="mr-1" /> Try a new suggestion
