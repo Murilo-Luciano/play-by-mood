@@ -1,6 +1,6 @@
 "use client";
 
-import { MOST_POPULAR_PLATFORMS } from "@/adapters/types";
+import { MOST_POPULAR_PLATFORMS, Platform } from "@/adapters/types";
 import { buttonVariants } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -23,6 +23,7 @@ import { PlusCircledIcon } from "@radix-ui/react-icons";
 import _ from "lodash";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 const moods = {
@@ -75,8 +76,22 @@ const moods = {
 };
 
 export default function Home() {
+  const searchParams = useSearchParams();
+  const preSelectedPlatforms = searchParams
+    .get("platforms")
+    ?.split(",")
+    .map((p) => {
+      const entries = Object.entries(Platform).filter(
+        ([key, value]) => value === p
+      );
+
+      return entries.map(
+        ([key, value]) => Platform[key as keyof typeof Platform]
+      )[0];
+    });
+
   const [selectedPlatforms, setSelectedPlatforms] = useState(
-    MOST_POPULAR_PLATFORMS
+    preSelectedPlatforms || MOST_POPULAR_PLATFORMS
   );
 
   return (

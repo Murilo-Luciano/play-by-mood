@@ -23,7 +23,7 @@ export default function Page({ params }: { params: { mood: string } }) {
 
   const { data, error, isLoading } = useSWR<Games>(
     `/api/game?mood=${params.mood}&${
-      selectedPlatforms?.length && `platforms=${selectedPlatforms}`
+      selectedPlatforms?.length ? `platforms=${selectedPlatforms}` : ""
     }`,
     fetcher,
     {
@@ -96,8 +96,8 @@ export default function Page({ params }: { params: { mood: string } }) {
   const sanitizedHtml = DOMPurify.sanitize(data.description);
 
   return (
-    <main className="flex flex-col text-center p-4 md:px-96">
-      <div className="bg-background border border-purple-500 rounded-2xl flex gap-2 text-start px-4 py-2">
+    <main className="flex flex-col text-center p-4 xl:px-96">
+      <div className="bg-background border border-purple-500 rounded-2xl flex gap-3 text-start px-4 py-2 lg:max-w-96">
         <div className="">
           <Image
             src={`/${params.mood.toLocaleLowerCase()}.png`}
@@ -106,10 +106,19 @@ export default function Page({ params }: { params: { mood: string } }) {
             height={24}
           />
         </div>
-        <div className="">
+        <div className="flex-2">
           <h5 className="font-medium">Feeling {_.capitalize(params.mood)} ?</h5>
           <p className="text-sm">Here's one game you might enjoy!</p>
         </div>
+
+        <Link
+          href={`/${
+            selectedPlatforms?.length ? `?platforms=${selectedPlatforms}` : ""
+          }`}
+          className="flex-1 text-center border max-w-16"
+        >
+          <p className="text-purple-500 text-sm">Change mood</p>
+        </Link>
       </div>
 
       <h2 className="text-4xl text-start font-extrabold tracking-tight mb-4 mt-8">
