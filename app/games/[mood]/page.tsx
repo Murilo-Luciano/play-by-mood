@@ -116,7 +116,7 @@ export default function Page({ params }: { params: { mood: string } }) {
           href={`/${
             selectedPlatforms?.length ? `?platforms=${selectedPlatforms}` : ""
           }`}
-          className="flex-1 text-center border max-w-16"
+          className="flex-1 text-center border max-w-16 rounded-xl"
         >
           <p className="text-purple-500 text-sm">Change mood</p>
         </Link>
