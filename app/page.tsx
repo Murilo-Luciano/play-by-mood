@@ -24,7 +24,7 @@ import _ from "lodash";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 
 const moods = {
   [Mood.EXCITED]: {
@@ -75,7 +75,7 @@ const moods = {
   },
 };
 
-export default function Home() {
+function Home() {
   const searchParams = useSearchParams();
   const preSelectedPlatforms = searchParams
     .get("platforms")
@@ -224,5 +224,13 @@ export default function Home() {
         </p>
       </div>
     </main>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense>
+      <Home />
+    </Suspense>
   );
 }
