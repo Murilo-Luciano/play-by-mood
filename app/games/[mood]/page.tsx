@@ -1,9 +1,10 @@
 "use client";
 
+import ErrorPage from "@/components/suggestionPage/ErrorPage";
+import SkeletonLoading from "@/components/suggestionPage/SkeletonLoading";
 import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Games } from "@/models/Games";
 import { UpdateIcon } from "@radix-ui/react-icons";
 import DOMPurify from "dompurify";
@@ -34,93 +35,19 @@ export default function Page({ params }: { params: { mood: string } }) {
     }
   );
 
-  if (isLoading)
-    return (
-      <main className="flex flex-col p-4 text-center overflow-x-hidden">
-        <Skeleton className="w-full h-9 my-16" />
-        <ScrollArea className="self-start p-4 rounded-lg border w-full">
-          <div className="flex flex-row gap-3 overflow-y-auto">
-            <Skeleton className="w-[264px] h-[148px] rounded-2xl" />
-            <Skeleton className="w-[264px] h-[148px] rounded-2xl" />
-          </div>
+  if (isLoading) return <SkeletonLoading />;
 
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-
-        <div className="flex flex-col gap-4 mt-4">
-          <div className="flex gap-8">
-            <div className="flex flex-col gap-1">
-              <Skeleton className="w-12 h-4" />
-              <Skeleton className="w-24 h-4" />
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <Skeleton className="w-12 h-4" />
-              <Skeleton className="w-24 h-4" />
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <Skeleton className="w-12 h-4" />
-              <Skeleton className="w-24 h-4" />
-            </div>
-          </div>
-
-          <Skeleton className="w-24 h-4" />
-          <Skeleton className="w-full h-80" />
-        </div>
-      </main>
-    );
-
-  if (!data || _.isEmpty(data) || error)
-    return (
-      <main className="flex flex-col p-4 items-center">
-        <div className="flex flex-col items-center gap-4">
-          <TriangleAlertIcon className="h-16 w-16 text-gray-500 dark:text-gray-400" />
-          <div className="space-y-2 text-center">
-            <h1 className="text-3xl font-bold">Oops, something went wrong!</h1>
-            <p className="text-gray-500 dark:text-gray-400">
-              We're sorry, but it looks like there was an error. Please try
-              again later or contact us if the issue persists.
-            </p>
-          </div>
-          <Link
-            href="/"
-            prefetch={false}
-            className={buttonVariants({ variant: "default" })}
-          >
-            Return to Homepage
-          </Link>
-        </div>
-      </main>
-    );
+  if (!data || _.isEmpty(data) || error) return <ErrorPage />;
 
   const sanitizedHtml = DOMPurify.sanitize(data.description);
 
   return (
     <main className="flex flex-col text-center p-4 xl:px-96">
-      <div className="bg-background border border-purple-500 rounded-2xl flex gap-3 text-start px-4 py-2 lg:max-w-96">
-        <div className="">
-          <Image
-            src={`/${params.mood.toLocaleLowerCase()}.png`}
-            alt="emoji"
-            width={24}
-            height={24}
-          />
-        </div>
-        <div className="flex-2">
-          <h5 className="font-medium">Feeling {_.capitalize(params.mood)} ?</h5>
-          <p className="text-sm">Here's one game you might enjoy!</p>
-        </div>
-
-        <Link
-          href={`/${
-            selectedPlatforms?.length ? `?platforms=${selectedPlatforms}` : ""
-          }`}
-          className="flex-1 text-center border max-w-16 rounded-xl"
-        >
-          <p className="text-purple-500 text-sm">Change mood</p>
-        </Link>
-      </div>
+      <MoodAlert
+        mood={_.capitalize(params.mood)}
+        moodImageUrl={`/${params.mood.toLocaleLowerCase()}.png`}
+        selectedPlatforms={selectedPlatforms}
+      />
 
       <h2 className="text-4xl text-start font-extrabold tracking-tight mb-4 mt-8">
         {data.name}
@@ -259,23 +186,33 @@ function applyClassMapping(html: string): string {
   return html;
 }
 
-function TriangleAlertIcon(props: any) {
+function MoodAlert({
+  mood,
+  moodImageUrl,
+  selectedPlatforms,
+}: {
+  mood: string;
+  moodImageUrl: string;
+  selectedPlatforms: string | null;
+}) {
   return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
-      <path d="M12 9v4" />
-      <path d="M12 17h.01" />
-    </svg>
+    <div className="bg-background border border-purple-500 rounded-2xl flex gap-3 text-start px-4 py-2 lg:max-w-96">
+      <div>
+        <Image src={moodImageUrl} alt="emoji" width={24} height={24} />
+      </div>
+      <div className="flex-2">
+        <h5 className="font-medium">Feeling {mood} ?</h5>
+        <p className="text-sm">Here's one game you might enjoy!</p>
+      </div>
+
+      <Link
+        href={`/${
+          selectedPlatforms?.length ? `?platforms=${selectedPlatforms}` : ""
+        }`}
+        className="flex-1 text-center border max-w-16 rounded-xl"
+      >
+        <p className="text-purple-500 text-sm">Change mood</p>
+      </Link>
+    </div>
   );
 }
