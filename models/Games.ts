@@ -24,7 +24,7 @@ class Platform {
 
 class Screenshot {
   @prop({ required: true }) public id!: number;
-  @prop({ required: true }) public imageUrl!: string;
+  @prop({ required: true }) public image!: string;
   @prop({ required: true }) public width!: number;
   @prop({ required: true }) public height!: number;
 }

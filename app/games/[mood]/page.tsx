@@ -59,7 +59,7 @@ export default function Page({ params }: { params: { mood: string } }) {
           {data.screenshots?.map((e, k) => (
             <Image
               key={k}
-              src={(e as any).image}
+              src={e.image}
               alt="Game screenshot"
               width={264}
               height={148}
