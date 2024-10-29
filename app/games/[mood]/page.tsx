@@ -5,6 +5,7 @@ import SkeletonLoading from "@/components/suggestionPage/SkeletonLoading";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Games } from "@/models/Games";
 import { UpdateIcon } from "@radix-ui/react-icons";
 import DOMPurify from "dompurify";
@@ -56,16 +57,9 @@ export default function Page({ params }: { params: { mood: string } }) {
       <p className="text-start text-muted-foreground">Screenshots</p>
       <ScrollArea className="p-4 rounded-lg border">
         <div className="flex flex-row gap-3 overflow-y-auto">
-          {data.screenshots?.map((e, k) => (
-            <Image
-              key={k}
-              src={e.image}
-              alt="Game screenshot"
-              width={264}
-              height={148}
-              className="rounded-2xl w-auto h-auto mb-2"
-            />
-          ))}
+          {data.screenshots?.map((e, k) => {
+            return <ScreenshotImage key={k} imageUrl={e.image} />;
+          })}
         </div>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
@@ -214,5 +208,25 @@ function MoodAlert({
         <p className="text-purple-500 text-sm">Change mood</p>
       </Link>
     </div>
+  );
+}
+
+function ScreenshotImage({ imageUrl }: { imageUrl: string }) {
+  const [loading, setLoading] = useState(true);
+
+  return (
+    <>
+      <Image
+        src={imageUrl}
+        alt="Game screenshot"
+        width={264}
+        height={148}
+        className={`rounded-2xl w-auto h-auto mb-2`}
+        onLoad={() => setLoading(false)}
+      />
+      <Skeleton
+        className={`w-[264px] h-[148px] rounded-2xl ${loading ? "" : "hidden"}`}
+      />
+    </>
   );
 }
