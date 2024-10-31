@@ -1,7 +1,7 @@
 import gameService from "@/services/gameService";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   console.info("[games-importer] Handling cron request");
 
   const authHeader = request.headers.get("authorization");
