@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/games-importer",
+      "schedule": "0 4 1 * *"
+    }
+  ]
+}
