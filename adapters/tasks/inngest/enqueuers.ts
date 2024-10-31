@@ -2,7 +2,11 @@ import { Mood } from "@/services/types";
 import _ from "lodash";
 import { inngest } from "./client";
 
-async function enqueueGamesImportTasksByGenre(mood: Mood, totalPages: number) {
+async function enqueueGamesImportTasks(
+  mood: Mood,
+  queryId: string,
+  totalPages: number
+) {
   const tasksEnqueuer: (() => Promise<void>)[] = [];
 
   for (let page = 1; page <= totalPages; page++) {
@@ -11,6 +15,7 @@ async function enqueueGamesImportTasksByGenre(mood: Mood, totalPages: number) {
         name: "games/import",
         data: {
           mood,
+          queryId,
           page,
         },
       });
@@ -33,4 +38,4 @@ async function enqueueTasksWithConcurrency(
   }
 }
 
-export default { enqueueGamesImportTasksByGenre };
+export default { enqueueGamesImportTasks };

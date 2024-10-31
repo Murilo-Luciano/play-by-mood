@@ -5,7 +5,7 @@ import {
   BLOCKED_TAGS,
   MINIMAL_METACRITIC_RATING,
   MINIMAL_RAWG_ADDED_COUNT,
-  TAGS_BY_MOOD,
+  QUERIES_BY_MOOD,
 } from "@/services/gameService";
 import { Mood } from "@/services/types";
 import { GetEvents } from "inngest";
@@ -17,7 +17,7 @@ export const importGames = inngest.createFunction(
   { id: "import-games", concurrency: 2 },
   { event: "games/import" },
   async ({ event, step }) => {
-    const { mood, page } = event.data;
+    const { mood, queryId, page } = event.data;
 
     if (!isMoodValid(mood)) {
       console.error(`[inngest-import-game] Invalid mood ${mood}`);
@@ -31,29 +31,34 @@ export const importGames = inngest.createFunction(
       return;
     }
 
-    const tags = TAGS_BY_MOOD[mood];
+    if (typeof queryId != "string") {
+      console.error(`[inngest-import-game] Invalid queryId ${queryId}`);
 
-    if (!tags) {
+      return;
+    }
+
+    const queries = QUERIES_BY_MOOD[mood];
+
+    const query = queries.find((query) => query.id === queryId);
+
+    if (!query) {
       console.error(
-        `[inngest-import-game] Tags not registered for mood ${mood}`
+        `[inngest-import-game] No query ${queryId} registered for mood ${mood}`
       );
 
       return;
     }
 
-    if (!tags.include.length) {
-      console.error(`[inngest-import-game] No tags mood ${mood}`);
-
-      return;
-    }
-
     console.info(
-      `[inngest-import-game] Importing page ${page} of ${mood} games`
+      `[inngest-import-game] Importing page ${page} of query ${queryId} from ${mood} games`
     );
 
-    const gamesId = (await rawg.getGamesByTags(tags.include, page)).map(
-      (game) => game.id
-    );
+    const gamesId = (
+      await rawg.getGames(
+        { tags: query.tags?.include, genres: query.genres },
+        page
+      )
+    ).map((game) => game.id);
 
     const gamesDetailEvents = gamesId.map<Event["games/import.details"]>(
       (id) => ({
@@ -61,18 +66,19 @@ export const importGames = inngest.createFunction(
         data: {
           gameId: id,
           mood,
+          queryId,
         },
       })
     );
 
     console.info(
-      `[inngest-import-game] Enqueuing ${gamesDetailEvents.length} games of: page ${page} mood ${mood}`
+      `[inngest-import-game] Enqueuing ${gamesDetailEvents.length} games of: page ${page} query ${queryId} mood ${mood}`
     );
 
     await step.sendEvent("enqueue-games-detail-import", gamesDetailEvents);
 
     console.info(
-      `[inngest-import-game] Finished importing page ${page} of ${mood} games`
+      `[inngest-import-game] Finished importing page ${page} of query ${queryId} from ${mood} games`
     );
     return;
   }
@@ -82,7 +88,7 @@ export const importGameDetail = inngest.createFunction(
   { id: "import-game-details", concurrency: 2 },
   { event: "games/import.details" },
   async ({ event, step }) => {
-    const { gameId, mood } = event.data;
+    const { gameId, queryId, mood } = event.data;
 
     if (!gameId) {
       console.error(`[inngest-import-game-details] Missing gameId`);
@@ -95,11 +101,21 @@ export const importGameDetail = inngest.createFunction(
       return;
     }
 
+    if (typeof queryId != "string") {
+      console.error(`[inngest-import-game-details] Invalid queryId ${queryId}`);
+
+      return;
+    }
+
     console.info(`[inngest-import-game-details] Importing ${gameId} details`);
 
     const game = await rawg.getGameDetails(gameId);
 
-    const excludeTags = TAGS_BY_MOOD[mood]?.exclude || [];
+    const queries = QUERIES_BY_MOOD[mood];
+
+    const query = queries.find((query) => query.id === queryId);
+
+    const excludeTags = query?.tags?.exclude || [];
 
     if (
       game.tags

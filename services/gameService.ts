@@ -11,92 +11,156 @@ export const MINIMAL_RAWG_ADDED_COUNT = 1000;
 export const MINIMAL_METACRITIC_RATING = 70;
 export const BLOCKED_TAGS = ["nsfw", "adult", "erotic"];
 
-/**@todo: Adicionar busca por genre */
-/** Algumas buscas dever ser genre e tags e outras genre ou tags */
-export const TAGS_BY_MOOD: Record<
-  Mood,
-  { include: string[]; exclude: string[] }
-> = {
-  [Mood.EXCITED]: {
-    include: [
-      "stealth",
-      "horror",
-      "survival-horror",
-      "violent",
-      "combat",
-      "runner",
-      "martial-arts",
-      "war",
-      "military",
-      "post-apocalyptic",
-      "hack-and-slash",
-      "exploration",
-      "perma-death",
-      "parkour",
-      "street-racing",
-      "driving",
-    ],
-    exclude: ["relaxing", "cute", "calm", "peaceful"],
-  },
-  [Mood.RELAXED]: {
-    include: ["relaxing", "cute", "calm", "peaceful"],
-    exclude: [],
-  },
-  [Mood.FOCUSED]: {
-    include: ["puzzle"], // deveria ser genre ( não existe tag puzzle )
-    exclude: [],
-  },
-  [Mood.ADVENTUROUS]: {
-    // tbm buscar pelo genre adventure no filtro ( n precisa ser genre E tags )
-    include: ["exploration", "open-world", "action-adventure"],
-    exclude: [],
-  },
-  [Mood.COMPETITIVE]: {
-    include: ["competitive", "pvp", "online-pvp", "esports", "2d-fighter"],
-    exclude: ["relaxing", "cute", "calm", "peaceful"],
-  },
-  [Mood.CURIOUS]: { include: ["story-rich"], exclude: [] },
-  [Mood.NOSTALGIC]: {
-    include: ["classic", "1990s", "1980s", "retro"],
-    exclude: [],
-  },
-  [Mood.SOCIAL]: { include: ["online-multiplayer"], exclude: [] },
-  [Mood.ANGRY]: {
-    include: ["gore", "destruction", "blood"],
-    exclude: ["relaxing", "cute", "calm", "peaceful"],
-  },
-  [Mood.STRATEGIC]: {
-    // adicionar genre strategy no filtro
-    include: [
-      "economy",
-      "city-builder",
-      "building",
-      "management",
-      "base-building",
-      "tactical",
-      "rts",
-    ],
-    exclude: ["fps"],
-  },
-  [Mood.PLAYFUL]: {
-    // adicionar genre casual no filtro
+interface MoodQuery {
+  id: string;
+  tags?: {
+    include: string[];
+    exclude: string[];
+  };
+  genres?: string[];
+}
 
-    include: ["local-multiplayer", "local-co-op"],
-    exclude: [],
-  },
+export const QUERIES_BY_MOOD: Record<Mood, MoodQuery[]> = {
+  [Mood.EXCITED]: [
+    {
+      id: "tags-query",
+      tags: {
+        include: [
+          "stealth",
+          "horror",
+          "survival-horror",
+          "violent",
+          "combat",
+          "runner",
+          "martial-arts",
+          "war",
+          "military",
+          "post-apocalyptic",
+          "hack-and-slash",
+          "exploration",
+          "perma-death",
+          "parkour",
+          "street-racing",
+          "driving",
+        ],
+        exclude: ["relaxing", "cute", "calm", "peaceful"],
+      },
+    },
+  ],
+  [Mood.COMPETITIVE]: [
+    {
+      id: "tags-query",
+      tags: {
+        include: ["competitive", "pvp", "online-pvp", "esports", "2d-fighter"],
+        exclude: ["relaxing", "cute", "calm", "peaceful"],
+      },
+    },
+  ],
+  [Mood.RELAXED]: [
+    {
+      id: "tags-query",
+      tags: {
+        include: ["relaxing", "cute", "calm", "peaceful"],
+        exclude: [],
+      },
+    },
+  ],
+  [Mood.CURIOUS]: [
+    {
+      id: "tags-query",
+      tags: { include: ["story-rich"], exclude: [] },
+    },
+  ],
+  [Mood.NOSTALGIC]: [
+    {
+      id: "tags-query",
+      tags: {
+        include: ["classic", "1990s", "1980s", "retro"],
+        exclude: [],
+      },
+    },
+  ],
+  [Mood.SOCIAL]: [
+    {
+      id: "tags-query",
+      tags: { include: ["online-multiplayer"], exclude: [] },
+    },
+  ],
+  [Mood.ANGRY]: [
+    {
+      id: "tags-query",
+      tags: {
+        include: ["gore", "destruction", "blood"],
+        exclude: ["relaxing", "cute", "calm", "peaceful"],
+      },
+    },
+  ],
+  [Mood.ADVENTUROUS]: [
+    {
+      id: "tags-query",
+      tags: {
+        include: ["exploration", "open-world", "action-adventure"],
+        exclude: [],
+      },
+    },
+    {
+      id: "genres-query",
+      genres: ["adventure"],
+    },
+  ],
+  [Mood.FOCUSED]: [
+    {
+      id: "genres-query",
+      genres: ["puzzle"],
+    },
+  ],
+  [Mood.PLAYFUL]: [
+    {
+      id: "genres-and-tags-query",
+      tags: {
+        include: ["local-multiplayer", "local-co-op"],
+        exclude: [],
+      },
+      genres: ["casual"],
+    },
+  ],
+  [Mood.STRATEGIC]: [
+    {
+      id: "genres-and-tags-query",
+      tags: {
+        include: [
+          "economy",
+          "city-builder",
+          "building",
+          "management",
+          "base-building",
+          "tactical",
+          "rts",
+        ],
+        exclude: ["fps"],
+      },
+      genres: ["strategy"],
+    },
+  ],
 };
 
-const GAMES_PER_MOOD = 600;
+const GAMES_PER_MOOD_QUERY = 600;
 
 async function importGames() {
-  for (const mood of Object.keys(TAGS_BY_MOOD)) {
-    const totalPages = GAMES_PER_MOOD / RAWG_ITENS_PER_PAGE;
+  const totalPages = GAMES_PER_MOOD_QUERY / RAWG_ITENS_PER_PAGE;
 
-    console.info(
-      `[import-games] Enqueuing ${totalPages} pages for ${mood} games`
-    );
+  for (const [mood, queries] of Object.entries(QUERIES_BY_MOOD)) {
+    for (const query of queries) {
+      console.info(
+        `[import-games] Enqueuing ${totalPages} pages for query ${query.id} ${mood} games`
+      );
 
-    await taskEnqueuer.enqueueGamesImportTasksByGenre(mood as Mood, totalPages);
+      await taskEnqueuer.enqueueGamesImportTasks(
+        mood as Mood,
+        query.id,
+        totalPages
+      );
+    }
   }
 }
 

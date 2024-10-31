@@ -101,14 +101,22 @@ export const rawgParentPlatforms = {
   [Platform.NEO_GEO]: { id: 13 },
 };
 
-async function getGamesByTags(tags: string[], page = 1) {
+async function getGames(
+  query: { tags?: string[]; genres?: string[] },
+  page = 1
+) {
+  if (!query.tags && !query.genres) {
+    throw new Error("[rawg.getGames] query cant be empty");
+  }
+
   const response = await axios.get<RawgListGamesResponse>(
     "https://api.rawg.io/api/games",
 
     {
       params: {
         key: process.env.RAWG_API_KEY,
-        tags: tags.join(","),
+        ...(!!query.tags && { tags: query.tags.join(",") }),
+        ...(!!query.genres && { genres: query.genres.join(",") }),
         ordering: "-added",
         parent_platforms: MOST_POPULAR_PLATFORMS.map(
           (platform) => rawgParentPlatforms[platform].id
@@ -149,7 +157,7 @@ async function getGameScreenshots(gameId: number) {
 }
 
 export default {
-  getGamesByTags,
+  getGames,
   getGameDetails,
   getGameScreenshots,
 };
