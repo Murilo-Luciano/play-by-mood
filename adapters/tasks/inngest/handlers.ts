@@ -109,6 +109,18 @@ export const importGameDetail = inngest.createFunction(
 
     console.info(`[inngest-import-game-details] Importing ${gameId} details`);
 
+    // Temp
+    await connectDB();
+    const storedGame = await GamesModel.findOne({ id: gameId });
+
+    if (storedGame && storedGame.screenshots?.length) {
+      console.info(
+        `[inngest-import-game-details] Game ${gameId} already imported`
+      );
+
+      return;
+    }
+
     const game = await rawg.getGameDetails(gameId);
 
     const queries = QUERIES_BY_MOOD[mood];
@@ -156,7 +168,7 @@ export const importGameDetail = inngest.createFunction(
       return;
     }
 
-    await connectDB();
+    // await connectDB();
     await GamesModel.findOneAndUpdate(
       { id: game.id, mood },
       {
