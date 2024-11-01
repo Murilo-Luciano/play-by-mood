@@ -21,6 +21,53 @@ interface MoodQuery {
 }
 
 export const QUERIES_BY_MOOD: Record<Mood, MoodQuery[]> = {
+  [Mood.FOCUSED]: [
+    {
+      id: "genres-query",
+      genres: ["puzzle"],
+    },
+  ],
+  [Mood.PLAYFUL]: [
+    {
+      id: "genres-and-tags-query",
+      tags: {
+        include: ["local-multiplayer", "local-co-op"],
+        exclude: [],
+      },
+      genres: ["casual"],
+    },
+  ],
+  [Mood.STRATEGIC]: [
+    {
+      id: "genres-and-tags-query",
+      tags: {
+        include: [
+          "economy",
+          "city-builder",
+          "building",
+          "management",
+          "base-building",
+          "tactical",
+          "rts",
+        ],
+        exclude: ["fps"],
+      },
+      genres: ["strategy"],
+    },
+  ],
+  [Mood.ADVENTUROUS]: [
+    {
+      id: "tags-query",
+      tags: {
+        include: ["exploration", "open-world", "action-adventure"],
+        exclude: [],
+      },
+    },
+    {
+      id: "genres-query",
+      genres: ["adventure"],
+    },
+  ],
   [Mood.EXCITED]: [
     {
       id: "tags-query",
@@ -95,56 +142,9 @@ export const QUERIES_BY_MOOD: Record<Mood, MoodQuery[]> = {
       },
     },
   ],
-  [Mood.ADVENTUROUS]: [
-    {
-      id: "tags-query",
-      tags: {
-        include: ["exploration", "open-world", "action-adventure"],
-        exclude: [],
-      },
-    },
-    {
-      id: "genres-query",
-      genres: ["adventure"],
-    },
-  ],
-  [Mood.FOCUSED]: [
-    {
-      id: "genres-query",
-      genres: ["puzzle"],
-    },
-  ],
-  [Mood.PLAYFUL]: [
-    {
-      id: "genres-and-tags-query",
-      tags: {
-        include: ["local-multiplayer", "local-co-op"],
-        exclude: [],
-      },
-      genres: ["casual"],
-    },
-  ],
-  [Mood.STRATEGIC]: [
-    {
-      id: "genres-and-tags-query",
-      tags: {
-        include: [
-          "economy",
-          "city-builder",
-          "building",
-          "management",
-          "base-building",
-          "tactical",
-          "rts",
-        ],
-        exclude: ["fps"],
-      },
-      genres: ["strategy"],
-    },
-  ],
 };
 
-const GAMES_PER_MOOD_QUERY = 600;
+const GAMES_PER_MOOD_QUERY = 200;
 
 async function importGames() {
   const totalPages = GAMES_PER_MOOD_QUERY / RAWG_ITENS_PER_PAGE;
