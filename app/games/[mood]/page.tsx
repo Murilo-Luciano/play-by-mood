@@ -56,7 +56,7 @@ export default function Page({ params }: { params: { mood: string } }) {
 
       <p className="text-start text-muted-foreground">Screenshots</p>
       <ScrollArea className="p-4 rounded-lg border">
-        <div className="flex flex-row gap-3 overflow-y-auto">
+        <div className="flex flex-row gap-3">
           {data.screenshots?.map((e, k) => {
             return <ScreenshotImage key={k} imageUrl={e.image} />;
           })}
