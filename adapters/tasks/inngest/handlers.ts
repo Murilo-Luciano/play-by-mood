@@ -109,7 +109,6 @@ export const importGameDetail = inngest.createFunction(
 
     console.info(`[inngest-import-game-details] Importing ${gameId} details`);
 
-    // Temp
     await connectDB();
     const storedGame = await GamesModel.findOne({ id: gameId });
 
@@ -168,7 +167,6 @@ export const importGameDetail = inngest.createFunction(
       return;
     }
 
-    // await connectDB();
     await GamesModel.findOneAndUpdate(
       { id: game.id, mood },
       {
