@@ -65,3 +65,7 @@ curl --request GET \
   --url http://localhost:3000/api/cron/games-importer \
   --header 'Authorization: Bearer <CRON_SECRET>'
 ``` 
+
+## Contributing
+
+Contributions to `PlayByMood` are always welcome! If you find a bug or have a feature request, please create an [issue](https://github.com/Murilo-Luciano/play-by-mood/issues/new) on GitHub. If you'd like to contribute code, please [fork](https://github.com/Murilo-Luciano/play-by-mood/fork) the repository and submit a pull request.
