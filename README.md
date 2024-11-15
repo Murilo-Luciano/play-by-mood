@@ -26,3 +26,42 @@ Every month, PlayByMood automatically updates its game suggestions through an in
 - MongoDB
 - Inngest
 - Vercel Cron Jobs
+
+## How to Run the Project
+
+### Environment Variables
+
+Create a `.env` file in the root directory and add the following variables:  
+```env
+MONGODB_URI="<your-mongodb-uri>"
+RAWG_API_KEY="<your-rawg-api-key>"
+CRON_SECRET="<define-a-secret>"
+```
+
+### Run the Project
+
+To start the application, use Docker Compose:  
+```bash
+docker compose up
+```
+After this, the project will be available at http://localhost:3000.
+
+### Run the Inngest Dev Server
+
+1. Access the Docker terminal:  
+   ```bash
+   yarn sh
+   ```
+2. Start the Inngest Dev Server:  
+   ```bash
+   yarn inngest
+   ```
+
+### Trigger the Games Import Flow
+
+To manually trigger the games import process, use the following cURL command:  
+```bash
+curl --request GET \
+  --url http://localhost:3000/api/cron/games-importer \
+  --header 'Authorization: Bearer <CRON_SECRET>'
+``` 
