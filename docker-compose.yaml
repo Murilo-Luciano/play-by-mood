@@ -3,7 +3,7 @@ version: "3.5"
 services:
   app:
     container_name: docker-play-by-mood
-    image: node:18-alpine
+    image: node:24-alpine
     ports:
       - "3000:3000"
     working_dir: /app

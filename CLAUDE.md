@@ -10,7 +10,7 @@ PlayByMood (https://playbymood.com/) suggests a top-rated game for a user-select
 
 Package manager is Yarn.
 
-- `docker compose up` — the documented way to run the app (Node 18 container, runs `yarn install && yarn dev`, serves http://localhost:3000). `yarn dev` works directly too.
+- `docker compose up` — the documented way to run the app (Node 24 container, runs `yarn install && yarn dev`, serves http://localhost:3000). `yarn dev` works directly too.
 - `yarn build` / `yarn start` — production build/serve.
 - `yarn lint` — `next lint` (no ESLint config is committed yet, so the first run prompts to create one).
 - `yarn sh` — shell into the `docker-play-by-mood` container.
