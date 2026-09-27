@@ -1,228 +1,156 @@
 "use client";
 
 import { MOST_POPULAR_PLATFORMS, Platform } from "@/adapters/types";
-import { buttonVariants } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Mood } from "@/services/types";
-import { PlusCircledIcon } from "@radix-ui/react-icons";
-import _ from "lodash";
-import Image from "next/image";
+import Credits from "@/components/Credits";
+import Wordmark from "@/components/Wordmark";
+import { MOOD_KEYS, MOODS, parsePlatforms, resultHref } from "@/lib/moods";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 
-const moods = {
-  [Mood.EXCITED]: {
-    imageSrc: "/excited.png",
-    description: "High-energy, looking for an adrenaline rush.",
-  },
-  [Mood.RELAXED]: {
-    imageSrc: "/relaxed.png",
-    description: "Wanting a calm, soothing experience.",
-  },
-  [Mood.FOCUSED]: {
-    imageSrc: "/focused.png",
-    description: "Ready to take on challenges and puzzles.",
-  },
-  [Mood.ADVENTUROUS]: {
-    imageSrc: "/adventurous.png",
-    description: "Eager to explore new worlds and environments.",
-  },
-
-  [Mood.COMPETITIVE]: {
-    imageSrc: "/competitive.png",
-    description: "In the mood for some intense multiplayer action.",
-  },
-  [Mood.CURIOUS]: {
-    imageSrc: "/curious.png",
-    description: "Looking to discover new stories or mechanics.",
-  },
-  [Mood.NOSTALGIC]: {
-    imageSrc: "/nostalgic.png",
-    description: "Longing for classic or retro gaming experiences.",
-  },
-  [Mood.SOCIAL]: {
-    imageSrc: "/social.png",
-    description: "Looking to play games with friends or meet new people.",
-  },
-  [Mood.ANGRY]: {
-    imageSrc: "/angry.png",
-    description: "Wanting to vent some frustration or blow off steam.",
-  },
-  [Mood.STRATEGIC]: {
-    imageSrc: "/strategic.png",
-    description:
-      "Interested in tactical games that require planning and decision-making.",
-  },
-  [Mood.PLAYFUL]: {
-    imageSrc: "/playful.png",
-    description: "Wanting a light-hearted and fun experience.",
-  },
+const PLATFORM_LABELS: Record<string, string> = {
+  [Platform.PC]: "PC",
+  [Platform.APPLE_MACINTOSH]: "MAC",
+  [Platform.LINUX]: "LINUX",
+  [Platform.WEB]: "WEB",
+  [Platform.PLAYSTATION]: "PS",
+  [Platform.XBOX]: "XBOX",
+  [Platform.IOS]: "iOS",
+  [Platform.ANDROID]: "DROID",
 };
 
 function Home() {
   const searchParams = useSearchParams();
-  const preSelectedPlatforms = searchParams
-    .get("platforms")
-    ?.split(",")
-    .map((p) => {
-      const entries = Object.entries(Platform).filter(
-        ([key, value]) => value === p
-      );
-
-      return entries.map(
-        ([key, value]) => Platform[key as keyof typeof Platform]
-      )[0];
-    });
-
-  const [selectedPlatforms, setSelectedPlatforms] = useState(
-    preSelectedPlatforms || MOST_POPULAR_PLATFORMS
+  const [platforms, setPlatforms] = useState(
+    parsePlatforms(searchParams.get("platforms"))
   );
 
+  const togglePlatform = (platform: Platform) =>
+    setPlatforms((selected) =>
+      selected.includes(platform)
+        ? selected.filter((p) => p !== platform)
+        : [...selected, platform]
+    );
+
   return (
-    <main className="flex flex-col text-center p-4 md:px-24">
-      <h2 className="text-start font-semibold text-lg md:text-xl">
-        Find good games based on your mood!
-      </h2>
-
-      <div className="h-4" />
-
-      <p className="text-start text-base md:text-lg font-light ">
-        Select your preferred platforms:
-      </p>
-
-      <div className="h-4" />
-
-      <Popover>
-        <PopoverTrigger
-          className={`self-start border-dashed border-purple-500 md:w-[200px] ${buttonVariants(
-            { variant: "outline" }
-          )}`}
+    <main className="mx-auto max-w-6xl px-4 md:px-8">
+      <header className="pt-10 md:pt-14 pb-8 text-center">
+        <div
+          aria-hidden
+          className="font-pixel flex justify-between text-[9px] md:text-[11px] mb-8 md:mb-10"
         >
-          <PlusCircledIcon className="mr-2 h-4 w-4" />
-          Platforms
-        </PopoverTrigger>
-        <PopoverContent>
-          <Command>
-            <CommandInput placeholder="Platform" />
-            <CommandList>
-              <CommandEmpty>No results found.</CommandEmpty>
-              <CommandGroup>
-                {MOST_POPULAR_PLATFORMS.map((platform) => (
-                  <CommandItem key={platform}>
-                    <Checkbox
-                      id={platform}
-                      checked={selectedPlatforms.includes(platform)}
-                      onCheckedChange={() =>
-                        selectedPlatforms.includes(platform)
-                          ? setSelectedPlatforms(
-                              selectedPlatforms.filter((p) => p !== platform)
-                            )
-                          : setSelectedPlatforms([
-                              ...selectedPlatforms,
-                              platform,
-                            ])
-                      }
-                    />
-                    <label htmlFor={platform} className="text-base ml-2 w-full">
-                      {_.capitalize(platform)}
-                    </label>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-
-              {selectedPlatforms.length > 0 && (
-                <>
-                  <CommandSeparator />
-                  <CommandGroup>
-                    <CommandItem
-                      onSelect={() => setSelectedPlatforms([])}
-                      className="justify-center text-center"
-                    >
-                      Clear filters
-                    </CommandItem>
-                  </CommandGroup>
-                </>
-              )}
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
-
-      <div className="h-8" />
-
-      <p className="text-start text-base md:text-lg font-light ">
-        What’s your mood today ?
-      </p>
-
-      <div className="h-4" />
-
-      <ScrollArea className="h-[600px] w-full p-4 rounded-lg border">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {Object.entries(moods).map(([key, proprieties]) => (
-            <Link
-              href={`/games/${key}?platforms=${selectedPlatforms.join(",")}`}
-              key={key}
-              className={`${buttonVariants({
-                variant: "outline",
-              })} h-auto w-full flex flex-col items-center justify-start bg-primary-foreground border-purple-500 rounded-xl shadow`}
-            >
-              <Image
-                src={proprieties.imageSrc}
-                alt={`${key.toLowerCase()} emoji`}
-                height={48}
-                width={48}
-                className="mb-2"
-              />
-              <span className="font-semibold text-lg">{_.capitalize(key)}</span>
-              <p className="text-base font-light text-wrap">
-                {proprieties.description}
-              </p>
-            </Link>
-          ))}
+          <span className="text-neon-cyan">
+            1UP <span className="text-white">00</span>
+          </span>
+          <span className="text-neon-magenta">
+            HI-SCORE <span className="text-white">098</span>
+          </span>
+          <span className="text-neon-yellow">
+            CREDIT <span className="text-white">∞</span>
+          </span>
         </div>
-        <ScrollBar />
-      </ScrollArea>
-
-      <div className="h-4" />
-
-      <div className="flex flex-col gap-2 py-2">
-        <p className="text-sm text-muted-foreground">
-          Made by{" "}
-          <a
-            href="https://github.com/Murilo-Luciano"
-            target="_blank"
-            className="underline text-purple-500"
-          >
-            @Murilo
-          </a>
+        <Wordmark />
+        <p className="font-pixel mt-6 text-[10px] md:text-sm text-neon-yellow blink">
+          INSERT MOOD TO CONTINUE
         </p>
-        <p className="text-sm text-muted-foreground">
-          Inspired by{" "}
-          <a
-            href="https://mood2movie.com/"
-            target="_blank"
-            className="underline text-purple-500"
-          >
-            @Mood2Movie
-          </a>
-        </p>
-      </div>
+      </header>
+
+      <section className="mb-10">
+        <h2 className="font-pixel text-[10px] md:text-xs text-crt-muted mb-3 text-center">
+          ── LOAD CARTRIDGES ──
+        </h2>
+        <div className="flex flex-wrap justify-center gap-2 md:gap-3">
+          {MOST_POPULAR_PLATFORMS.map((platform) => {
+            const selected = platforms.includes(platform);
+
+            return (
+              <button
+                key={platform}
+                onClick={() => togglePlatform(platform)}
+                aria-pressed={selected}
+                aria-label={platform}
+                className={`font-pixel text-[9px] md:text-[10px] pt-2.5 pb-2 px-3 md:px-4 transition-all [clip-path:polygon(0_0,88%_0,100%_30%,100%_100%,0_100%)] ${
+                  selected
+                    ? "bg-neon-cyan text-crt-bg shadow-[0_0_16px_rgba(61,248,255,.6),inset_0_-4px_0_rgba(0,0,0,.25)]"
+                    : "bg-crt-chip text-crt-subtle shadow-[inset_0_0_0_2px_theme(colors.crt.line),inset_0_-4px_0_rgba(0,0,0,.4)] hover:text-crt-text"
+                }`}
+              >
+                {selected ? "■ " : "□ "}
+                {PLATFORM_LABELS[platform]}
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      <section>
+        <h1 className="font-pixel text-center text-sm md:text-xl neon-cyan mb-6 md:mb-8">
+          SELECT YOUR MOOD
+        </h1>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+          {MOOD_KEYS.map((key, index) => {
+            const mood = MOODS[key];
+
+            return (
+              <Link
+                key={key}
+                href={resultHref(key, platforms)}
+                className="mood-tile relative bg-crt-panel p-3 md:p-4 flex flex-col items-center text-center"
+              >
+                <span className="p1-marker font-pixel absolute top-2 left-2 text-[8px] bg-neon-magenta text-crt-bg px-1.5 py-1">
+                  P1
+                </span>
+                <span className="font-pixel absolute top-2 right-2 text-[8px] text-crt-dim">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div
+                  className="mt-4 mb-3 grid place-items-center w-16 h-16 md:w-20 md:h-20"
+                  style={{
+                    background: `radial-gradient(circle, hsla(${mood.hue},100%,60%,.35), transparent 70%)`,
+                  }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={mood.image}
+                    alt=""
+                    className="w-11 h-11 md:w-14 md:h-14"
+                  />
+                </div>
+                <span className="font-pixel text-[10px] md:text-xs text-white tracking-tight">
+                  {mood.label.toUpperCase()}
+                </span>
+                <p className="mt-2 text-lg leading-5 text-crt-soft hidden sm:block">
+                  {mood.description}
+                </p>
+                <div className="mt-3 w-full h-1.5 bg-crt-track">
+                  <div
+                    className="h-full"
+                    style={{
+                      width: `${40 + ((index * 37) % 60)}%`,
+                      background: `hsl(${mood.hue},100%,60%)`,
+                    }}
+                  />
+                </div>
+              </Link>
+            );
+          })}
+          <div className="hidden lg:flex bg-crt-sunken shadow-[inset_0_0_0_2px_theme(colors.crt.line)] p-4 flex-col items-center justify-center text-center">
+            <span className="font-pixel text-[10px] text-crt-dim leading-5">
+              MORE MOODS
+              <br />
+              COMING SOON
+            </span>
+            <span className="font-pixel mt-3 text-2xl text-crt-line">?</span>
+          </div>
+        </div>
+        {platforms.length === 0 && (
+          <p className="font-pixel mt-6 text-center text-[10px] text-neon-yellow">
+            NO CARTRIDGE LOADED · ALL PLATFORMS
+          </p>
+        )}
+      </section>
+
+      <Credits />
     </main>
   );
 }
