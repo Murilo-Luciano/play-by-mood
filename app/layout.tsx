@@ -1,18 +1,32 @@
+import { palette } from "@/lib/palette";
 import { Analytics } from "@vercel/analytics/react";
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Press_Start_2P, VT323 } from "next/font/google";
 import Head from "next/head";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const pixel = Press_Start_2P({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-pixel",
+});
+const terminal = VT323({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-terminal",
+});
 
 export const metadata: Metadata = {
   title: "PlayByMood",
-  description: "Find good games based on your mood!",
+  description: "Insert mood to continue. Find a top-rated game for how you feel.",
   openGraph: {
     title: "PlayByMood",
-    description: "Find good games based on your mood!",
+    description: "Insert mood to continue. Find a top-rated game for how you feel.",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: palette.crt.bg,
 };
 
 export default function RootLayout({
@@ -21,21 +35,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className={`${pixel.variable} ${terminal.variable}`}>
+      <body>
         <Analytics />
         <Head>
           <meta property="og:image" content="/logo.jpg" />
         </Head>
-        <div className="text-center pt-4">
-          <a
-            className="text-xl md:text-2xl font-extrabold tracking-tight mb-5"
-            href="/"
-          >
-            PlayByMood
-          </a>
-        </div>
-        {children}
+        <div className="relative z-10 min-h-screen">{children}</div>
       </body>
     </html>
   );

@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss"
+import { palette } from "./lib/palette"
 
 const config = {
   darkMode: ["class"],
@@ -18,7 +19,12 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        pixel: ["var(--font-pixel)", "monospace"],
+        terminal: ["var(--font-terminal)", "monospace"],
+      },
       colors: {
+        ...palette,
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
