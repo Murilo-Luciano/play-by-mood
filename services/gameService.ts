@@ -9,8 +9,8 @@ import { Platform } from "@/adapters/types";
 import _ from "lodash";
 import { Mood, SuggestedGame } from "./types";
 
-const MINIMAL_RAWG_ADDED_COUNT = 1000;
-const MINIMAL_METACRITIC_RATING = 70;
+export const MINIMAL_RAWG_ADDED_COUNT = 1000;
+export const MINIMAL_METACRITIC_RATING = 70;
 const BLOCKED_TAGS = ["nsfw", "adult", "erotic"];
 
 interface MoodQuery {

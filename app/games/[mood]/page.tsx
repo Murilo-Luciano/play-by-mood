@@ -1,6 +1,5 @@
 "use client";
 
-import Credits from "@/components/Credits";
 import Wordmark from "@/components/Wordmark";
 import { MOODS, homeHref } from "@/lib/moods";
 import { palette } from "@/lib/palette";
@@ -137,9 +136,9 @@ function Result({ moodParam }: { moodParam: string }) {
           <p className="font-pixel text-[10px] md:text-xs text-neon-magenta mb-3">
             <span className="blink">●</span> NOW PLAYING
           </p>
-          <h1 className="font-pixel text-2xl md:text-5xl leading-tight neon-yellow break-words">
+          <h2 className="font-pixel text-2xl md:text-5xl leading-tight neon-yellow break-words">
             {game.name.toUpperCase()}
-          </h1>
+          </h2>
 
           <div className="mt-8 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-6 md:gap-8">
             <div>
@@ -289,7 +288,6 @@ function Result({ moodParam }: { moodParam: string }) {
             </div>
           </section>
 
-          <Credits rawg />
         </main>
       </div>
     </>

@@ -36,10 +36,19 @@ Required env var (`.env`): `RAWG_API_KEY`.
 
 ## Adding or changing a mood
 
-Touch all of: the `Mood` enum (`services/types.ts`), `QUERIES_BY_MOOD` (`services/gameService.ts`; typed as `Record<Mood, …>` so the compiler flags omissions), `MOODS` in `lib/moods.ts` (label, image, description, hue; also a `Record<Mood, …>`), and an emoji image at `public/<mood lowercase>.png`. Each extra query multiplies RAWG requests on a cold cache (up to 5 list pages per query).
+Touch all of: the `Mood` enum (`services/types.ts`), `QUERIES_BY_MOOD` (`services/gameService.ts`; typed as `Record<Mood, …>` so the compiler flags omissions), `MOODS` in `lib/moods.ts` (label, image, description, intro, hue; also a `Record<Mood, …>`; `intro` must describe what the mood's queries actually return), and an emoji image at `public/<mood lowercase>.png`. The sitemap, llms.txt, mood page copy and share images pick the new mood up from `MOODS`. Each extra query multiplies RAWG requests on a cold cache (up to 5 list pages per query).
 
 ## UI
 
 The visual identity is "Neon Arcade": retro arcade/CRT look, dark only. Colors live in `lib/palette.ts` and are exposed to Tailwind as `neon-*` / `crt-*` (e.g. `bg-crt-panel`, `text-neon-cyan`, `shadow-[inset_0_0_0_2px_theme(colors.crt.line)]`); use them instead of raw hex. Fonts are loaded in `app/layout.tsx` and used via `font-pixel` (Press Start 2P, headings/labels) and `font-terminal` (VT323, body default). Glow text, blinking, the CRT scanlines/vignette and the mood tile hover live in `app/globals.css`. Shared chrome: `components/Wordmark.tsx`, `components/Credits.tsx`.
 
 `components/ui/` is generated shadcn/ui code (`components.json`), currently unused by the pages; add components with the shadcn CLI rather than hand-writing them.
+
+## SEO / GEO
+
+AI crawlers mostly don't run JavaScript, so indexable content must be in the server HTML:
+- The home is statically prerendered. Don't call `useSearchParams` in anything it renders: in a static route that bails the tree out to an empty client shell. `components/MoodPicker.tsx` reads `?platforms=` from `window.location` after mount instead.
+- Mood pages (`/games/[mood]`) get their title, description, canonical (without `?platforms=`), 404/uppercase redirect and server-rendered copy from `app/games/[mood]/layout.tsx`; the suggestion itself is random and client-side.
+- Next merges `openGraph` / `twitter` metadata shallowly: spread `OPEN_GRAPH_BASE` / `TWITTER_BASE` (`lib/site.ts`) when overriding them.
+- `app/sitemap.ts`, `app/robots.ts` and `app/llms.txt/route.ts` are generated from `MOODS`; home FAQ copy doubles as `FAQPage` JSON-LD.
+- Share images (`opengraph-image.tsx`, rendered by `lib/ogImage.tsx`) read `assets/fonts/` and `public/*.png` with `fs`; keep `outputFileTracingIncludes` in `next.config.mjs` in sync or they break on Vercel.

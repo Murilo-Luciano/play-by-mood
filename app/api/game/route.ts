@@ -1,13 +1,13 @@
 import { RawgError } from "@/adapters/rawg";
 import { Platform } from "@/adapters/types";
+import { isMood } from "@/lib/moods";
 import gameService from "@/services/gameService";
-import { Mood } from "@/services/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   const mood = request.nextUrl.searchParams.get("mood");
 
-  if (!mood || !isMoodValid(mood))
+  if (!mood || !isMood(mood))
     return NextResponse.json({ message: "Invalid Mood" }, { status: 422 });
 
   const platforms = request.nextUrl.searchParams.get("platforms")?.split(",");
@@ -29,10 +29,6 @@ export async function GET(request: NextRequest) {
       { status: 502 }
     );
   }
-}
-
-function isMoodValid(mood: string): mood is Mood {
-  return Object.values(Mood).includes(mood as Mood);
 }
 
 function isPlatformsValid(platforms: string[]): platforms is Platform[] {
