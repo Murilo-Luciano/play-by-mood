@@ -1,39 +1,94 @@
-"use client";
-
-import { MOST_POPULAR_PLATFORMS, Platform } from "@/adapters/types";
-import Credits from "@/components/Credits";
+import { MOST_POPULAR_PLATFORMS } from "@/adapters/types";
+import JsonLd from "@/components/JsonLd";
+import MoodPicker from "@/components/MoodPicker";
 import Wordmark from "@/components/Wordmark";
-import { MOOD_KEYS, MOODS, parsePlatforms, resultHref } from "@/lib/moods";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import { MOOD_KEYS } from "@/lib/moods";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+import {
+  MINIMAL_METACRITIC_RATING,
+  MINIMAL_RAWG_ADDED_COUNT,
+} from "@/services/gameService";
 
-const PLATFORM_LABELS: Record<string, string> = {
-  [Platform.PC]: "PC",
-  [Platform.APPLE_MACINTOSH]: "MAC",
-  [Platform.LINUX]: "LINUX",
-  [Platform.WEB]: "WEB",
-  [Platform.PLAYSTATION]: "PS",
-  [Platform.XBOX]: "XBOX",
-  [Platform.IOS]: "iOS",
-  [Platform.ANDROID]: "DROID",
+const STEPS = [
+  { title: "LOAD CARTRIDGES", text: "Pick the platforms you play on." },
+  {
+    title: "SELECT YOUR MOOD",
+    text: `Choose how you feel from ${MOOD_KEYS.length} moods.`,
+  },
+  {
+    title: "PLAY",
+    text: "Get one top-rated game. Not feeling it? Hit CONTINUE for another.",
+  },
+];
+
+// Shown on the page and mirrored in the FAQPage structured data.
+const FAQ = [
+  {
+    question: "What is PlayByMood?",
+    answer:
+      "PlayByMood is a free website that recommends a video game based on how you feel. Pick a mood and the platforms you play on, and it suggests one well-reviewed game to play right now.",
+  },
+  {
+    question: "How are the games picked?",
+    answer: `Each mood maps to genres and tags on RAWG, the largest open video game database. PlayByMood keeps games with a Metacritic score of ${MINIMAL_METACRITIC_RATING} or higher that at least ${MINIMAL_RAWG_ADDED_COUNT.toLocaleString(
+      "en-US"
+    )} RAWG players have added to their library, then picks one at random.`,
+  },
+  {
+    question: "Which platforms are supported?",
+    answer: `${MOST_POPULAR_PLATFORMS.slice(0, -1).join(", ")} and ${
+      MOST_POPULAR_PLATFORMS[MOST_POPULAR_PLATFORMS.length - 1]
+    }. Select one or more before choosing your mood.`,
+  },
+  {
+    question: "Is it free? Do I need an account?",
+    answer: "Yes, it's free, and there's no sign-up or account.",
+  },
+  {
+    question: "Can I get a different suggestion?",
+    answer:
+      "Yes. Press CONTINUE? NEW GAME on the result screen to draw another game for the same mood, or change your mood at any time.",
+  },
+];
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: SITE_NAME,
+      description: SITE_DESCRIPTION,
+      inLanguage: "en",
+    },
+    {
+      "@type": "WebApplication",
+      name: SITE_NAME,
+      url: SITE_URL,
+      description: SITE_DESCRIPTION,
+      applicationCategory: "EntertainmentApplication",
+      operatingSystem: "Any",
+      browserRequirements: "Requires JavaScript",
+      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+      isPartOf: { "@id": `${SITE_URL}/#website` },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: FAQ.map(({ question, answer }) => ({
+        "@type": "Question",
+        name: question,
+        acceptedAnswer: { "@type": "Answer", text: answer },
+      })),
+    },
+  ],
 };
 
-function Home() {
-  const searchParams = useSearchParams();
-  const [platforms, setPlatforms] = useState(
-    parsePlatforms(searchParams.get("platforms"))
-  );
-
-  const togglePlatform = (platform: Platform) =>
-    setPlatforms((selected) =>
-      selected.includes(platform)
-        ? selected.filter((p) => p !== platform)
-        : [...selected, platform]
-    );
-
+export default function Home() {
   return (
     <main className="mx-auto max-w-6xl px-4 md:px-8">
+      <JsonLd data={structuredData} />
+
       <header className="pt-10 md:pt-14 pb-8 text-center">
         <div
           aria-hidden
@@ -49,116 +104,65 @@ function Home() {
             CREDIT <span className="text-white">∞</span>
           </span>
         </div>
-        <Wordmark />
+        <h1>
+          <Wordmark />
+        </h1>
         <p className="font-pixel mt-6 text-[10px] md:text-sm text-neon-yellow blink">
           INSERT MOOD TO CONTINUE
         </p>
+        <p className="mt-4 text-xl md:text-2xl text-crt-soft">
+          Pick a mood and get a top-rated video game to play today.
+        </p>
       </header>
 
-      <section className="mb-10">
-        <h2 className="font-pixel text-[10px] md:text-xs text-crt-muted mb-3 text-center">
-          ── LOAD CARTRIDGES ──
+      <MoodPicker />
+
+      <section aria-labelledby="how-to-play" className="mt-20">
+        <h2
+          id="how-to-play"
+          className="font-pixel text-center text-sm md:text-lg neon-magenta mb-6 md:mb-8"
+        >
+          HOW TO PLAY
         </h2>
-        <div className="flex flex-wrap justify-center gap-2 md:gap-3">
-          {MOST_POPULAR_PLATFORMS.map((platform) => {
-            const selected = platforms.includes(platform);
-
-            return (
-              <button
-                key={platform}
-                onClick={() => togglePlatform(platform)}
-                aria-pressed={selected}
-                aria-label={platform}
-                className={`font-pixel text-[9px] md:text-[10px] pt-2.5 pb-2 px-3 md:px-4 transition-all [clip-path:polygon(0_0,88%_0,100%_30%,100%_100%,0_100%)] ${
-                  selected
-                    ? "bg-neon-cyan text-crt-bg shadow-[0_0_16px_rgba(61,248,255,.6),inset_0_-4px_0_rgba(0,0,0,.25)]"
-                    : "bg-crt-chip text-crt-subtle shadow-[inset_0_0_0_2px_theme(colors.crt.line),inset_0_-4px_0_rgba(0,0,0,.4)] hover:text-crt-text"
-                }`}
-              >
-                {selected ? "■ " : "□ "}
-                {PLATFORM_LABELS[platform]}
-              </button>
-            );
-          })}
-        </div>
+        <ol className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+          {STEPS.map((step, index) => (
+            <li
+              key={step.title}
+              className="bg-crt-panel p-5 shadow-[inset_0_0_0_2px_theme(colors.crt.line)]"
+            >
+              <p className="font-pixel text-[10px] text-crt-dim">
+                STAGE {index + 1}
+              </p>
+              <h3 className="font-pixel mt-3 text-[11px] md:text-xs text-neon-yellow">
+                {step.title}
+              </h3>
+              <p className="mt-2 text-xl leading-6 text-crt-body">{step.text}</p>
+            </li>
+          ))}
+        </ol>
       </section>
 
-      <section>
-        <h1 className="font-pixel text-center text-sm md:text-xl neon-cyan mb-6 md:mb-8">
-          SELECT YOUR MOOD
-        </h1>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-          {MOOD_KEYS.map((key, index) => {
-            const mood = MOODS[key];
-
-            return (
-              <Link
-                key={key}
-                href={resultHref(key, platforms)}
-                className="mood-tile relative bg-crt-panel p-3 md:p-4 flex flex-col items-center text-center"
-              >
-                <span className="p1-marker font-pixel absolute top-2 left-2 text-[8px] bg-neon-magenta text-crt-bg px-1.5 py-1">
-                  P1
-                </span>
-                <span className="font-pixel absolute top-2 right-2 text-[8px] text-crt-dim">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <div
-                  className="mt-4 mb-3 grid place-items-center w-16 h-16 md:w-20 md:h-20"
-                  style={{
-                    background: `radial-gradient(circle, hsla(${mood.hue},100%,60%,.35), transparent 70%)`,
-                  }}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={mood.image}
-                    alt=""
-                    className="w-11 h-11 md:w-14 md:h-14"
-                  />
-                </div>
-                <span className="font-pixel text-[10px] md:text-xs text-white tracking-tight">
-                  {mood.label.toUpperCase()}
-                </span>
-                <p className="mt-2 text-lg leading-5 text-crt-soft hidden sm:block">
-                  {mood.description}
-                </p>
-                <div className="mt-3 w-full h-1.5 bg-crt-track">
-                  <div
-                    className="h-full"
-                    style={{
-                      width: `${40 + ((index * 37) % 60)}%`,
-                      background: `hsl(${mood.hue},100%,60%)`,
-                    }}
-                  />
-                </div>
-              </Link>
-            );
-          })}
-          <div className="hidden lg:flex bg-crt-sunken shadow-[inset_0_0_0_2px_theme(colors.crt.line)] p-4 flex-col items-center justify-center text-center">
-            <span className="font-pixel text-[10px] text-crt-dim leading-5">
-              MORE MOODS
-              <br />
-              COMING SOON
-            </span>
-            <span className="font-pixel mt-3 text-2xl text-crt-line">?</span>
-          </div>
-        </div>
-        {platforms.length === 0 && (
-          <p className="font-pixel mt-6 text-center text-[10px] text-neon-yellow">
-            NO CARTRIDGE LOADED · ALL PLATFORMS
-          </p>
-        )}
+      <section aria-labelledby="faq" className="mt-20">
+        <h2
+          id="faq"
+          className="font-pixel text-center text-sm md:text-lg neon-cyan mb-6 md:mb-8"
+        >
+          FAQ
+        </h2>
+        <dl className="mx-auto max-w-3xl flex flex-col gap-3">
+          {FAQ.map(({ question, answer }) => (
+            <div
+              key={question}
+              className="bg-crt-sunken p-5 shadow-[inset_0_0_0_2px_theme(colors.crt.line)]"
+            >
+              <dt className="font-pixel text-[10px] md:text-[11px] leading-5 text-neon-yellow">
+                &gt; {question.toUpperCase()}
+              </dt>
+              <dd className="mt-3 text-xl leading-6 text-crt-body">{answer}</dd>
+            </div>
+          ))}
+        </dl>
       </section>
-
-      <Credits />
     </main>
-  );
-}
-
-export default function Page() {
-  return (
-    <Suspense>
-      <Home />
-    </Suspense>
   );
 }
