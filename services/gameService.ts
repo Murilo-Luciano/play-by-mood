@@ -1,5 +1,6 @@
 import rawg, {
   RAWG_ITENS_PER_PAGE,
+  RawgError,
   RawgGameDetails,
   RawgListGame,
   rawgParentPlatforms,
@@ -180,18 +181,22 @@ async function getSuggestedGame(
   for (let index = 0; index < attempts.length; index++) {
     const game = attempts[index];
 
+    let details: RawgGameDetails;
     try {
-      const details = await rawg.getGameDetails(game.id);
-
-      return toSuggestedGame(game, details);
+      details = await rawg.getGameDetails(game.id);
     } catch (error) {
-      if (index === attempts.length - 1) throw error;
+      if (!(error instanceof RawgError) || index === attempts.length - 1) {
+        throw error;
+      }
 
       console.warn(
         `[game-service] Failed to get details of game ${game.id}, trying another one`,
         error
       );
+      continue;
     }
+
+    return toSuggestedGame(game, details);
   }
 
   return undefined;

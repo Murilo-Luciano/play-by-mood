@@ -1,3 +1,4 @@
+import { RawgError } from "@/adapters/rawg";
 import { Platform } from "@/adapters/types";
 import gameService from "@/services/gameService";
 import { Mood } from "@/services/types";
@@ -19,6 +20,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(game || {});
   } catch (error) {
+    if (!(error instanceof RawgError)) throw error;
+
     console.error("[api-game] Failed to get suggested game", error);
 
     return NextResponse.json(

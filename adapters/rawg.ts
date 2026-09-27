@@ -120,17 +120,26 @@ async function rawgGet<T>(
     key: process.env.RAWG_API_KEY,
   });
 
-  const response = await fetch(
-    `https://api.rawg.io/api${path}?${searchParams}`,
-    { next: { revalidate: RAWG_CACHE_SECONDS } }
-  );
+  // Error messages never include the URL: it carries the API key.
+  let response: Response;
+  try {
+    response = await fetch(`https://api.rawg.io/api${path}?${searchParams}`, {
+      next: { revalidate: RAWG_CACHE_SECONDS },
+    });
+  } catch (error) {
+    throw new RawgError(`[rawg] ${path} request failed`, { cause: error });
+  }
 
   if (!response.ok) {
-    // Don't log the URL: it carries the API key.
-    throw new Error(`[rawg] ${path} responded ${response.status}`);
+    throw new RawgError(`[rawg] ${path} responded ${response.status}`);
   }
 
   return response.json();
+}
+
+/** RAWG is unreachable or answered with an error status. */
+export class RawgError extends Error {
+  name = "RawgError";
 }
 
 /** Lists games ordered by popularity, restricted to the most popular platforms. */
