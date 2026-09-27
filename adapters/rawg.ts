@@ -1,4 +1,3 @@
-import axios from "axios";
 import { MOST_POPULAR_PLATFORMS, Platform } from "./types";
 
 export enum Genre {
@@ -23,18 +22,55 @@ export enum Genre {
   CARD = "card",
 }
 
-/** https://api.rawg.io/docs/#operation/games_list */
+interface RawgTag {
+  id: number;
+  name: string;
+  slug: string;
+  language: string;
+}
+
+interface RawgGenre {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+interface RawgParentPlatform {
+  platform: {
+    id: number;
+    name: string;
+    slug: string;
+  };
+}
+
+/**
+ * https://api.rawg.io/docs/#operation/games_list
+ * The official schema omits tags, genres, parent_platforms and short_screenshots,
+ * but the API returns them. List tags mix languages (e.g. "eng" and "rus").
+ */
+export interface RawgListGame {
+  id: number;
+  name: string;
+  released: string;
+  background_image: string;
+  metacritic: number | null;
+  added: number;
+  tags: RawgTag[];
+  genres: RawgGenre[];
+  parent_platforms: RawgParentPlatform[];
+  /** The first item (id -1) is the background image, not a screenshot. */
+  short_screenshots: { id: number; image: string }[];
+}
+
 interface RawgListGamesResponse {
   count: number;
   next: string | null;
   previous: string | null;
-  results: {
-    id: number;
-  }[];
+  results: RawgListGame[];
 }
 
 /** https://api.rawg.io/docs/#operation/games_read */
-interface RawgGameDetailsResponse {
+export interface RawgGameDetails {
   id: number;
   name: string;
   description: string;
@@ -43,46 +79,16 @@ interface RawgGameDetailsResponse {
   background_image: string;
   released: string;
   added: number;
-  tags: {
-    id: number;
-    name: string;
-    slug: string;
-    language: string;
-    games_count: number;
-    image_background: string;
-  }[];
-  genres: {
-    id: number;
-    name: string;
-    slug: string;
-    games_count: number;
-    image_background: string;
-  }[];
-  parent_platforms: {
-    platform: {
-      id: number;
-      name: string;
-      slug: string;
-    };
-  }[];
+  tags: RawgTag[];
+  genres: RawgGenre[];
+  parent_platforms: RawgParentPlatform[];
   reddit_url: string;
 }
 
-/** https://api.rawg.io/docs/#operation/games_screenshots_list */
-interface RawgGameScreenshotsResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: {
-    id: number;
-    image: string;
-    width: number;
-    height: number;
-    is_deleted: boolean;
-  }[];
-}
-
 export const RAWG_ITENS_PER_PAGE = 40;
+
+/** RAWG data changes slowly; cache responses in the Next.js data cache for a day. */
+const RAWG_CACHE_SECONDS = 60 * 60 * 24;
 
 export const rawgParentPlatforms = {
   [Platform.PC]: { id: 1 },
@@ -101,63 +107,59 @@ export const rawgParentPlatforms = {
   [Platform.NEO_GEO]: { id: 13 },
 };
 
+async function rawgGet<T>(
+  path: string,
+  params: Record<string, string | number>
+): Promise<T> {
+  if (!process.env.RAWG_API_KEY) throw new Error("No RAWG_API_KEY defined");
+
+  const searchParams = new URLSearchParams({
+    ...Object.fromEntries(
+      Object.entries(params).map(([key, value]) => [key, String(value)])
+    ),
+    key: process.env.RAWG_API_KEY,
+  });
+
+  const response = await fetch(
+    `https://api.rawg.io/api${path}?${searchParams}`,
+    { next: { revalidate: RAWG_CACHE_SECONDS } }
+  );
+
+  if (!response.ok) {
+    // Don't log the URL: it carries the API key.
+    throw new Error(`[rawg] ${path} responded ${response.status}`);
+  }
+
+  return response.json();
+}
+
+/** Lists games ordered by popularity, restricted to the most popular platforms. */
 async function getGames(
-  query: { tags?: string[]; genres?: string[] },
+  query: { tags?: string[]; genres?: string[]; minimalMetacritic: number },
   page = 1
 ) {
   if (!query.tags && !query.genres) {
     throw new Error("[rawg.getGames] query cant be empty");
   }
 
-  const response = await axios.get<RawgListGamesResponse>(
-    "https://api.rawg.io/api/games",
-
-    {
-      params: {
-        key: process.env.RAWG_API_KEY,
-        ...(!!query.tags && { tags: query.tags.join(",") }),
-        ...(!!query.genres && { genres: query.genres.join(",") }),
-        ordering: "-added",
-        parent_platforms: MOST_POPULAR_PLATFORMS.map(
-          (platform) => rawgParentPlatforms[platform].id
-        ).join(","),
-        page: page,
-        page_size: RAWG_ITENS_PER_PAGE,
-      },
-    }
-  );
-
-  return response.data.results;
+  return rawgGet<RawgListGamesResponse>("/games", {
+    ...(!!query.tags && { tags: query.tags.join(",") }),
+    ...(!!query.genres && { genres: query.genres.join(",") }),
+    metacritic: `${query.minimalMetacritic},100`,
+    ordering: "-added",
+    parent_platforms: MOST_POPULAR_PLATFORMS.map(
+      (platform) => rawgParentPlatforms[platform].id
+    ).join(","),
+    page: page,
+    page_size: RAWG_ITENS_PER_PAGE,
+  });
 }
 
 async function getGameDetails(gameId: number) {
-  const response = await axios.get<RawgGameDetailsResponse>(
-    `https://api.rawg.io/api/games/${gameId}`,
-    {
-      params: {
-        key: process.env.RAWG_API_KEY,
-      },
-    }
-  );
-
-  return response.data;
-}
-
-async function getGameScreenshots(gameId: number) {
-  const response = await axios.get<RawgGameScreenshotsResponse>(
-    `https://api.rawg.io/api/games/${gameId}/screenshots`,
-    {
-      params: {
-        key: process.env.RAWG_API_KEY,
-      },
-    }
-  );
-
-  return response.data.results;
+  return rawgGet<RawgGameDetails>(`/games/${gameId}`, {});
 }
 
 export default {
   getGames,
   getGameDetails,
-  getGameScreenshots,
 };
