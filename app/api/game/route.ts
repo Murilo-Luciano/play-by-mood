@@ -1,3 +1,4 @@
+import { RawgError } from "@/adapters/rawg";
 import { Platform } from "@/adapters/types";
 import gameService from "@/services/gameService";
 import { Mood } from "@/services/types";
@@ -14,9 +15,20 @@ export async function GET(request: NextRequest) {
   if (platforms && !isPlatformsValid(platforms))
     return NextResponse.json({ message: "Invalid Platforms" }, { status: 422 });
 
-  const game = await gameService.getSuggestedGame(mood, platforms);
+  try {
+    const game = await gameService.getSuggestedGame(mood, platforms);
 
-  return NextResponse.json(game || {});
+    return NextResponse.json(game || {});
+  } catch (error) {
+    if (!(error instanceof RawgError)) throw error;
+
+    console.error("[api-game] Failed to get suggested game", error);
+
+    return NextResponse.json(
+      { message: "Could not reach the games database" },
+      { status: 502 }
+    );
+  }
 }
 
 function isMoodValid(mood: string): mood is Mood {

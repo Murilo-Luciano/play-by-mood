@@ -12,3 +12,23 @@ export enum Mood {
   STRATEGIC = "STRATEGIC",
   PLAYFUL = "PLAYFUL",
 }
+
+interface NamedEntity {
+  id: number;
+  name: string;
+}
+
+/** Game returned by `/api/game`. */
+export interface SuggestedGame {
+  id: number;
+  name: string;
+  /** Raw HTML from RAWG; sanitize before rendering. */
+  description: string;
+  metacriticRating: number;
+  imageUrl: string;
+  releasedDate: string;
+  tags: NamedEntity[];
+  genres: NamedEntity[];
+  platforms: NamedEntity[];
+  screenshots: { id: number; image: string }[];
+}

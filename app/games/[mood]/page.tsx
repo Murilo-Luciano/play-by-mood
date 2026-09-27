@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Games } from "@/models/Games";
+import { SuggestedGame } from "@/services/types";
 import { UpdateIcon } from "@radix-ui/react-icons";
 import DOMPurify from "dompurify";
 import _ from "lodash";
@@ -24,7 +24,7 @@ export default function Page({ params }: { params: { mood: string } }) {
   const searchParams = useSearchParams();
   const selectedPlatforms = searchParams.get("platforms");
 
-  const { data, error, isLoading, mutate } = useSWR<Games>(
+  const { data, error, isLoading, mutate } = useSWR<SuggestedGame>(
     `/api/game?mood=${params.mood}&${
       selectedPlatforms?.length ? `platforms=${selectedPlatforms}` : ""
     }`,
